@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>YEVOON 紋繡成本計算器</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ========== CSS 變數統一管理 ========== */
+    :root {
+      --bg: #f0f7ff;
+      --card: #ffffff;
+      --accent: #a7d7ff;
+      --accent-dark: #5ba3d9;
+      --accent-deeper: #3a7fbd;
+      --good: #6bcf9a;
+      --bad: #f28b82;
+      --text: #1a2b3c;
+      --muted: #7a8fa3;
+      --text-on-accent: #ffffff;
+      --line: rgba(167,215,255,0.35);
+      --shadow: 0 4px 20px rgba(90,150,200,0.10);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard Variable", Pretendard, "Noto Sans TC", system-ui, sans-serif;
+      background: linear-gradient(170deg, #e8f2ff 0%, var(--bg) 40%, #f5faff 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ========== 頂部列 ========== */
+    header {
+      padding: 22px 16px 10px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .header-left { flex: 1; min-width: 200px; }
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--text);
+    }
+    .badge-dev {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--text-on-accent);
+      background: var(--accent-dark);
+    }
+    .sub {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    /* 語言切換按鈕 */
+    .lang-toggle {
+      display: flex;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .lang-toggle button {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      background: var(--card);
+      color: var(--muted);
+      transition: all .2s;
+    }
+    .lang-toggle button.active {
+      background: var(--accent-dark);
+      color: var(--text-on-accent);
+    }
+
+    /* ========== 主體佈局 ========== */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 16px 28px;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+    }
+    @media (max-width: 920px) { main { grid-template-columns: 1fr; } }
+
+    /* ========== 卡片 ========== */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ========== 網格 ========== */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+
+    /* ========== 欄位 ========== */
+    .field {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(167,215,255,0.06);
+    }
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+      gap: 10px;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent-dark);
+      box-shadow: 0 0 0 3px rgba(167,215,255,0.35);
+    }
+    .hint {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+      opacity: 0.85;
+    }
+
+    /* ========== 按鈕 ========== */
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-on-accent);
+      background: var(--accent-dark);
+      transition: background .2s;
+    }
+    button:hover { background: var(--accent-deeper); }
+    button:active { transform: translateY(1px); }
+    button.secondary {
+      background: rgba(167,215,255,0.15);
+      color: var(--accent-deeper);
+      border: 1px solid var(--line);
+    }
+    button.secondary:hover { background: rgba(167,215,255,0.3); }
+
+    /* ========== Pill 標籤 ========== */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: rgba(167,215,255,0.1);
+      color: var(--muted);
+    }
+    .pill.good { color: #2a9d5c; background: rgba(107,207,154,0.12); border-color: rgba(107,207,154,0.3); }
+    .pill.bad  { color: #d04040; background: rgba(242,139,130,0.12); border-color: rgba(242,139,130,0.3); }
+
+    .mini { font-size: 12px; color: var(--muted); }
+    .flexTitle { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+
+    /* ========== 列 / 按鈕組 ========== */
+    .row {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      align-items: center; justify-content: space-between;
+      padding: 10px; border: 1px solid var(--line);
+      border-radius: 12px; background: rgba(167,215,255,0.06);
+      margin-top: 10px;
+    }
+    .btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+    /* ========== KPI 四格 ========== */
+    .kpi { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .kpi .box {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(167,215,255,0.06);
+    }
+    .kpi .box .t { color: var(--muted); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .kpi .box .v { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; color: var(--text); }
+    .kpi .box .s { font-size: 11px; margin-top: 6px; color: var(--muted); line-height: 1.4; }
+
+    /* ========== 明細表格 ========== */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+    .table th, .table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 650;
+      background: rgba(167,215,255,0.08);
+      width: 46%;
+    }
+    .table td { color: var(--text); }
+
+    /* ========== 勾選區 ========== */
+    .chkWrap {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px; border: 1px solid var(--line); border-radius: 12px;
+      background: rgba(167,215,255,0.06); margin-top: 10px;
+    }
+    .chk { display: flex; gap: 10px; align-items: flex-start; }
+    .chk input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent-dark); }
+    .chk .txt { display: flex; flex-direction: column; gap: 4px; }
+    .chk .txt .t { font-size: 13px; font-weight: 700; color: var(--text); }
+    .chk .txt .d { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ========== 細項面板 ========== */
+    .detailPanel {
+      margin-top: 10px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      background: rgba(167,215,255,0.04);
+      padding: 10px;
+      display: none;
+    }
+    .detailPanel.show { display: block; }
+    .listHeader {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin: 4px 2px 10px;
+    }
+    .smallBtn { padding: 8px 10px; border-radius: 10px; font-weight: 700; font-size: 12px; }
+    .rows { display: flex; flex-direction: column; gap: 8px; }
+    .itemRow {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+    @media (max-width: 520px) {
+      .itemRow { grid-template-columns: 1fr 1fr; }
+      .itemRow .delBtn { grid-column: 2 / 3; justify-self: end; }
+    }
+    .itemRow input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    .itemRow input:focus {
+      border-color: var(--accent-dark);
+      box-shadow: 0 0 0 3px rgba(167,215,255,0.35);
+    }
+    .delBtn {
+      background: rgba(242,139,130,0.12);
+      color: var(--bad);
+      border: 1px solid rgba(242,139,130,0.25);
+      padding: 9px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .delBtn:hover { background: rgba(242,139,130,0.25); }
+    .sumLine {
+      margin-top: 10px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px; border: 1px solid var(--line); border-radius: 12px;
+      background: rgba(167,215,255,0.06);
+      font-size: 12px; color: var(--text);
+    }
+    .sumLine b { font-size: 13px; }
+
+    /* ========== 頁尾 ========== */
+    footer {
+      max-width: 1100px; margin: 0 auto; padding: 0 16px 24px;
+      color: var(--muted); font-size: 12px; text-align: center;
+    }
+
+    /* ========== 手機優化 ========== */
+    button, input, select, label, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    input, select { font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>
+      <span data-i18n="title">紋繡成本計算器</span>
+      <span class="badge-dev">Made by YEVOON</span>
+    </h1>
+    <div class="sub" data-i18n="subtitle">
+      材料/耗材以「總購買價 ÷ 可用次數」自動計算單次成本。<br/>
+      固定成本以「月固定費 ÷ 月工作天數」分攤至每次施術。
+    </div>
+  </div>
+  <div class="lang-toggle">
+    <button id="langZh" class="active" onclick="setLang('zh')">中文</button>
+    <button id="langKo" onclick="setLang('ko')">한국어</button>
+  </div>
+</header>
+
+<main>
+  <!-- ===== 輸入區 ===== -->
+  <section class="card">
+    <div class="flexTitle">
+      <h2 data-i18n="inputTitle">1) 施術/成本輸入</h2>
+      <span class="pill" data-i18n="unitPill">單位：元(₩)・時間：分鐘</span>
+    </div>
+
+    <form id="calcForm" autocomplete="off">
+      <div class="grid">
+        <!-- 施術種類 -->
+        <div class="field">
+          <label><span data-i18n="presetLabel">施術種類</span> <span class="mini" data-i18n="presetMini">預設值</span></label>
+          <select id="preset"></select>
+          <div class="hint" data-i18n="presetHint">預設值為參考範例，可依自身店鋪調整。</div>
+        </div>
+        <!-- 售價 -->
+        <div class="field">
+          <label data-i18n="priceLabel">售價（客戶付款金額）</label>
+          <input id="price" type="number" inputmode="decimal" min="0" step="1000" />
+        </div>
+        <!-- 時間 -->
+        <div class="field">
+          <label><span data-i18n="minutesLabel">施術所需時間（分鐘）</span> <span class="mini" data-i18n="minutesMini">含接待</span></label>
+          <input id="minutes" type="number" inputmode="decimal" min="0" step="5" />
+        </div>
+        <!-- 材料費 -->
+        <div class="field">
+          <label><span data-i18n="materialLabel">材料費合計（單次）</span> <span class="mini" data-i18n="autoMini">可自動</span></label>
+          <input id="material" type="number" inputmode="decimal" min="0" step="100" />
+          <div class="hint" data-i18n="materialHint">使用下方「材料費細項」可自動計算合計。</div>
+        </div>
+        <!-- 耗材費 -->
+        <div class="field">
+          <label><span data-i18n="consumableLabel">耗材/衛生合計（單次）</span> <span class="mini" data-i18n="autoMini">可自動</span></label>
+          <input id="consumable" type="number" inputmode="decimal" min="0" step="100" />
+          <div class="hint" data-i18n="consumableHint">使用下方「耗材費細項」可自動計算合計。</div>
+        </div>
+        <!-- 其他變動成本 -->
+        <div class="field">
+          <label data-i18n="otherVarLabel">其他變動成本（單次）</label>
+          <input id="otherVar" type="number" inputmode="decimal" min="0" step="100" />
+        </div>
+        <!-- 時薪 -->
+        <div class="field">
+          <label data-i18n="hourlyWageLabel">施術者時薪（元/小時）</label>
+          <input id="hourlyWage" type="number" inputmode="decimal" min="0" step="1000" />
+        </div>
+        <!-- 固定成本分攤 -->
+        <div class="field">
+          <label><span data-i18n="fixedAllocLabel">固定成本分攤（元/次）</span> <span class="mini" data-i18n="autoMini">可自動</span></label>
+          <input id="fixedAlloc" type="number" inputmode="decimal" min="0" step="1000" />
+          <div class="hint" data-i18n="fixedAllocHint">使用下方「固定成本細項」可自動計算分攤金額。</div>
+        </div>
+        <!-- 手續費% -->
+        <div class="field">
+          <label data-i18n="feeRateLabel">支付/平台手續費（%）</label>
+          <input id="feeRate" type="number" inputmode="decimal" min="0" max="100" step="0.1" />
+        </div>
+        <!-- 固定手續費 -->
+        <div class="field">
+          <label data-i18n="feeFixedLabel">固定手續費（元）</label>
+          <input id="feeFixed" type="number" inputmode="decimal" min="0" step="100" />
+        </div>
+      </div>
+
+      <!-- ☐ 材料費細項 -->
+      <div class="chkWrap">
+        <div class="chk">
+          <input id="useMaterialDetail" type="checkbox" />
+          <div class="txt">
+            <div class="t" data-i18n="matDetailTitle">材料費細項展開（色料、棉片、針片、鉛筆等）</div>
+            <div class="d" data-i18n="matDetailDesc">「總購買價 ÷ 可用次數」自動計算單次成本後回填合計</div>
+          </div>
+        </div>
+        <span class="pill" id="matPill">OFF</span>
+      </div>
+      <div class="detailPanel" id="materialPanel">
+        <div class="listHeader">
+          <span class="pill" data-i18n="matItemsPill">材料項目</span>
+          <button class="secondary smallBtn" id="addMaterialBtn" type="button" data-i18n="addMaterial">+ 新增材料</button>
+        </div>
+        <div class="rows" id="materialRows"></div>
+        <div class="sumLine">
+          <span data-i18n="matSumLabel">材料費（單次）合計</span>
+          <b id="materialSumText">-</b>
+        </div>
+        <div class="hint" data-i18n="matSumHint">例）色料 40,000元 / 4次使用 → 10,000元/次</div>
+      </div>
+
+      <!-- ☐ 耗材費細項 -->
+      <div class="chkWrap">
+        <div class="chk">
+          <input id="useConsumableDetail" type="checkbox" />
+          <div class="txt">
+            <div class="t" data-i18n="conDetailTitle">耗材費細項展開（修護膏、紙杯、停車費等）</div>
+            <div class="d" data-i18n="conDetailDesc">「總購買價 ÷ 可用次數」自動計算單次成本後回填合計</div>
+          </div>
+        </div>
+        <span class="pill" id="conPill">OFF</span>
+      </div>
+      <div class="detailPanel" id="consumablePanel">
+        <div class="listHeader">
+          <span class="pill" data-i18n="conItemsPill">耗材項目</span>
+          <button class="secondary smallBtn" id="addConsumableBtn" type="button" data-i18n="addConsumable">+ 新增耗材</button>
+        </div>
+        <div class="rows" id="consumableRows"></div>
+        <div class="sumLine">
+          <span data-i18n="conSumLabel">耗材費（單次）合計</span>
+          <b id="consumableSumText">-</b>
+        </div>
+        <div class="hint" data-i18n="conSumHint">例）修護膏 20,000元 / 50個 → 400元/次</div>
+      </div>
+
+      <!-- ☐ 固定成本細項 -->
+      <div class="chkWrap">
+        <div class="chk">
+          <input id="useFixedDetail" type="checkbox" />
+          <div class="txt">
+            <div class="t" data-i18n="fixDetailTitle">固定成本細項展開</div>
+            <div class="d" data-i18n="fixDetailDesc">月固定費（房租/電費/管理費/行銷等）÷ 月工作天數 → 單次分攤</div>
+          </div>
+        </div>
+        <span class="pill" id="fixPill">OFF</span>
+      </div>
+      <div class="detailPanel" id="fixedPanel">
+        <div class="grid">
+          <div class="field">
+            <label data-i18n="workDaysLabel">月工作天數（天）</label>
+            <input id="workDays" type="number" inputmode="decimal" min="0" step="1" value="20" />
+          </div>
+        </div>
+        <div class="listHeader" style="margin-top:10px;">
+          <span class="pill" data-i18n="fixItemsPill">月固定費項目</span>
+          <button class="secondary smallBtn" id="addFixedBtn" type="button" data-i18n="addFixed">+ 新增固定費</button>
+        </div>
+        <div class="rows" id="fixedRows"></div>
+        <div class="sumLine">
+          <span data-i18n="fixSumLabel">固定成本分攤（單次）＝（月固定費合計 ÷ 月工作天數）</span>
+          <b id="fixedSumText">-</b>
+        </div>
+        <div class="hint" data-i18n="fixSumHint">例）月固定費 1,000,000元 / 月工作日 20天 = 50,000元（單次固定成本）</div>
+      </div>
+
+      <!-- ☐ 含補色1次 -->
+      <div class="chkWrap">
+        <div class="chk">
+          <input id="includeTouchUp" type="checkbox" />
+          <div class="txt">
+            <div class="t" data-i18n="touchUpTitle">含補色 1 次</div>
+            <div class="d" data-i18n="touchUpDesc">勾選後成本（材料+耗材+其他+人工+固定）×<b>2</b>，手續費維持 1 次</div>
+          </div>
+        </div>
+        <span class="pill" id="touchUpPill">OFF</span>
+      </div>
+
+      <!-- 按鈕列 -->
+      <div class="row">
+        <div class="pill" data-i18n="autoCalcPill">成本/利潤 自動計算</div>
+        <div class="btns">
+          <button class="secondary" id="resetBtn" type="button" data-i18n="resetBtn">重置</button>
+          <button id="calcBtn" type="submit" data-i18n="calcBtn">計算</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- ===== 結果區 ===== -->
+  <aside class="card">
+    <div class="flexTitle">
+      <h2 data-i18n="resultTitle">2) 結果</h2>
+      <span class="pill" id="statusPill" data-i18n="statusWait">待輸入</span>
+    </div>
+
+    <div class="kpi">
+      <div class="box">
+        <div class="t" data-i18n="kpiCostTitle">總成本（單次）</div>
+        <div class="v" id="totalCost">-</div>
+        <div class="s" data-i18n="kpiCostDesc">變動成本 + 人工 + 固定分攤 + 手續費</div>
+      </div>
+      <div class="box">
+        <div class="t" data-i18n="kpiProfitTitle">淨利潤（單次）</div>
+        <div class="v" id="profit">-</div>
+        <div class="s" data-i18n="kpiProfitDesc">售價 − 總成本</div>
+      </div>
+      <div class="box">
+        <div class="t" data-i18n="kpiMarginTitle">利潤率</div>
+        <div class="v" id="margin">-</div>
+        <div class="s" data-i18n="kpiMarginDesc">淨利潤 ÷ 售價</div>
+      </div>
+      <div class="box">
+        <div class="t" data-i18n="kpiHourTitle">時薪利潤</div>
+        <div class="v" id="profitPerHour">-</div>
+        <div class="s" data-i18n="kpiHourDesc">淨利潤 ÷（所需時間/60）</div>
+      </div>
+    </div>
+
+    <table class="table">
+      <tbody>
+        <tr><th data-i18n="rowPrice">售價</th><td id="d_price">-</td></tr>
+        <tr><th data-i18n="rowFee">手續費（%）+ 固定</th><td id="d_fee">-</td></tr>
+        <tr><th data-i18n="rowMaterial">材料費（單次）</th><td id="d_material">-</td></tr>
+        <tr><th data-i18n="rowConsumable">耗材費（單次）</th><td id="d_consumable">-</td></tr>
+        <tr><th data-i18n="rowOtherVar">其他變動成本（單次）</th><td id="d_otherVar">-</td></tr>
+        <tr><th data-i18n="rowLabor">人工成本（時薪×時間）</th><td id="d_labor">-</td></tr>
+        <tr><th data-i18n="rowFixed">固定成本分攤（單次）</th><td id="d_fixedAlloc">-</td></tr>
+        <tr><th data-i18n="rowTouchUp">補色倍率</th><td id="d_touchUp">-</td></tr>
+      </tbody>
+    </table>
+
+    <div class="row" style="margin-top:12px">
+      <div class="pill" data-i18n="suggestPricePill">建議售價計算</div>
+      <div class="btns">
+        <button class="secondary" id="copyBtn" type="button" data-i18n="copyBtn">複製結果</button>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:10px">
+      <div class="field">
+        <label data-i18n="targetMarginLabel">目標利潤率（%）</label>
+        <input id="targetMargin" type="number" inputmode="decimal" min="0" max="95" step="1" value="55" />
+      </div>
+      <div class="field">
+        <label><span data-i18n="requiredPriceLabel">建議售價（元）</span> <span class="mini" data-i18n="autoMini">自動</span></label>
+        <input id="requiredPrice" type="text" readonly />
+      </div>
+    </div>
+
+    <div class="hint" id="note" style="margin-top:10px;" data-i18n="noteDefault">填入數值後按「計算」即可查看詳細結果。</div>
+  </aside>
+</main>
+
+<footer>
+  <span class="badge-dev">YEVOON</span>
+  <div style="margin-top:8px;">© YEVOON 內部營運工具</div>
+</footer>
+
+<script>
+// ========== [1] 語言包 LANG ==========
+const LANG = {
+  zh: {
+    title: "紋繡成本計算器",
+    subtitle: "材料/耗材以「總購買價 ÷ 可用次數」自動計算單次成本。<br/>固定成本以「月固定費 ÷ 月工作天數」分攤至每次施術。",
+    inputTitle: "1) 施術/成本輸入",
+    unitPill: "單位：元(₩)・時間：分鐘",
+    presetLabel: "施術種類",
+    presetMini: "預設值",
+    presetHint: "預設值為參考範例，可依自身店鋪調整。",
+    priceLabel: "售價（客戶付款金額）",
+    minutesLabel: "施術所需時間（分鐘）",
+    minutesMini: "含接待",
+    materialLabel: "材料費合計（單次）",
+    autoMini: "可自動",
+    materialHint: "使用下方「材料費細項」可自動計算合計。",
+    consumableLabel: "耗材/衛生合計（單次）",
+    consumableHint: "使用下方「耗材費細項」可自動計算合計。",
+    otherVarLabel: "其他變動成本（單次）",
+    hourlyWageLabel: "施術者時薪（元/小時）",
+    fixedAllocLabel: "固定成本分攤（元/次）",
+    fixedAllocHint: "使用下方「固定成本細項」可自動計算分攤金額。",
+    feeRateLabel: "支付/平台手續費（%）",
+    feeFixedLabel: "固定手續費（元）",
+    matDetailTitle: "材料費細項展開（色料、棉片、針片、鉛筆等）",
+    matDetailDesc: "「總購買價 ÷ 可用次數」自動計算單次成本後回填合計",
+    matItemsPill: "材料項目",
+    addMaterial: "+ 新增材料",
+    matSumLabel: "材料費（單次）合計",
+    matSumHint: "例）色料 40,000元 / 4次使用 → 10,000元/次",
+    conDetailTitle: "耗材費細項展開（修護膏、紙杯、停車費等）",
+    conDetailDesc: "「總購買價 ÷ 可用次數」自動計算單次成本後回填合計",
+    conItemsPill: "耗材項目",
+    addConsumable: "+ 新增耗材",
+    conSumLabel: "耗材費（單次）合計",
+    conSumHint: "例）修護膏 20,000元 / 50個 → 400元/次",
+    fixDetailTitle: "固定成本細項展開",
+    fixDetailDesc: "月固定費（房租/電費/管理費/行銷等）÷ 月工作天數 → 單次分攤",
+    fixItemsPill: "月固定費項目",
+    addFixed: "+ 新增固定費",
+    fixSumLabel: "固定成本分攤（單次）＝（月固定費合計 ÷ 月工作天數）",
+    fixSumHint: "例）月固定費 1,000,000元 / 月工作日 20天 = 50,000元（單次固定成本）",
+    workDaysLabel: "月工作天數（天）",
+    touchUpTitle: "含補色 1 次",
+    touchUpDesc: '勾選後成本（材料+耗材+其他+人工+固定）×<b>2</b>，手續費維持 1 次',
+    autoCalcPill: "成本/利潤 自動計算",
+    resetBtn: "重置",
+    calcBtn: "計算",
+    resultTitle: "2) 結果",
+    statusWait: "待輸入",
+    statusGood: "盈利",
+    statusBad: "虧損",
+    statusCheck: "請確認輸入",
+    kpiCostTitle: "總成本（單次）",
+    kpiCostDesc: "變動成本 + 人工 + 固定分攤 + 手續費",
+    kpiProfitTitle: "淨利潤（單次）",
+    kpiProfitDesc: "售價 − 總成本",
+    kpiMarginTitle: "利潤率",
+    kpiMarginDesc: "淨利潤 ÷ 售價",
+    kpiHourTitle: "時薪利潤",
+    kpiHourDesc: "淨利潤 ÷（所需時間/60）",
+    rowPrice: "售價",
+    rowFee: "手續費（%）+ 固定",
+    rowMaterial: "材料費（單次）",
+    rowConsumable: "耗材費（單次）",
+    rowOtherVar: "其他變動成本（單次）",
+    rowLabor: "人工成本（時薪×時間）",
+    rowFixed: "固定成本分攤（單次）",
+    rowTouchUp: "補色倍率",
+    suggestPricePill: "建議售價計算",
+    copyBtn: "複製結果",
+    targetMarginLabel: "目標利潤率（%）",
+    requiredPriceLabel: "建議售價（元）",
+    noteDefault: "填入數值後按「計算」即可查看詳細結果。",
+    noteNoPrice: "請輸入售價以進行有意義的計算。",
+    noteCopied: "已複製到剪貼簿！",
+    noteCopyFail: "複製失敗（瀏覽器權限），請手動複製：",
+    touchUpOn: "ON（2倍）",
+    touchUpOff: "OFF",
+    touchUp2x: "2倍（含補色 1 次）",
+    touchUp1x: "1倍（基本）",
+    copyHeader: "紋繡成本計算結果（YEVOON）",
+    copyPreset: "施術",
+    copyTouchUp: "含補色",
+    copySalePrice: "售價",
+    copyTotalCost: "總成本",
+    copyProfit: "淨利潤",
+    copyMargin: "利潤率",
+    copyMaterial: "材料費",
+    copyConsumable: "耗材費",
+    copyFixed: "固定分攤",
+    // 預設選項名稱
+    p_custom: "自訂輸入",
+    p_emboss: "霧眉",
+    p_combo: "絲霧眉",
+    p_hairstroke: "線條眉",
+    p_machinefeather: "機器羽毛",
+    p_ombreMachine: "漸層機器",
+    p_lip: "嘟嘟唇",
+    p_overlip: "滿版唇",
+    p_hairline: "髮際線",
+    p_eyeliner: "美瞳線",
+    p_beautyspot: "美人痣",
+    // 細項佔位文字
+    phName: "品名（例：色料）",
+    phTotal: "總購買價",
+    phUses: "可用次數",
+    phFixName: "項目名稱（例：房租）",
+    phFixTotal: "月金額",
+    phFixUses: "可留空",
+    delTitle: "刪除",
+  },
+  ko: {
+    title: "반영구 원가 계산기",
+    subtitle: "재료/소모품은 '총 구매가 ÷ 사용가능 횟수'로 1회당 원가 자동 계산.<br/>고정비는 '월 고정비 ÷ 월 근무 일수'로 1회당 배분.",
+    inputTitle: "1) 시술/원가 입력",
+    unitPill: "단위: 원(₩) · 시간: 분",
+    presetLabel: "시술 종류",
+    presetMini: "프리셋",
+    presetHint: "프리셋은 초기값 예시. 샵 기준으로 수정 가능.",
+    priceLabel: "판매가(고객 결제)",
+    minutesLabel: "시술 소요시간(분)",
+    minutesMini: "실시술+응대",
+    materialLabel: "재료비 합계(1회)",
+    autoMini: "자동 가능",
+    materialHint: '아래 "재료비 세부 입력"을 사용하면 자동으로 합계가 채워짐.',
+    consumableLabel: "소모품/위생 합계(1회)",
+    consumableHint: '아래 "소모품 세부 입력"을 사용하면 자동으로 합계가 채워짐.',
+    otherVarLabel: "기타 변동비(1회)",
+    hourlyWageLabel: "시술자 시급(원/시간)",
+    fixedAllocLabel: "고정비 배분(원/시술)",
+    fixedAllocHint: '아래 "고정비 세부 입력"을 사용하면 자동으로 배분액이 채워짐.',
+    feeRateLabel: "결제/플랫폼 수수료(%)",
+    feeFixedLabel: "수수료 고정비(원)",
+    matDetailTitle: "재료비 세부 입력 사용(색소, 면봉, 니들, 펜슬 등)",
+    matDetailDesc: '"총 구매가 ÷ 사용가능 횟수"로 1회당 원가 자동 계산 후 합계 반영',
+    matItemsPill: "재료 항목",
+    addMaterial: "+ 재료 추가",
+    matSumLabel: "재료비(1회) 합계",
+    matSumHint: "예) 색소 40,000원 / 4회 사용 → 10,000원/회",
+    conDetailTitle: "소모품 세부 입력 사용(재생크림, 간식, 종이컵, 주차요금 등)",
+    conDetailDesc: '"총 구매가 ÷ 사용가능 횟수"로 1회당 원가 자동 계산 후 합계 반영',
+    conItemsPill: "소모품 항목",
+    addConsumable: "+ 소모품 추가",
+    conSumLabel: "소모품비(1회) 합계",
+    conSumHint: "예) 재생크림 20,000원 / 50개 → 400원/회",
+    fixDetailTitle: "고정비 세부 입력 사용",
+    fixDetailDesc: "월 고정비(월세/전기/관리비/마케팅 등) → 월 근무일로 1회당 배분",
+    fixItemsPill: "월 고정비 항목",
+    addFixed: "+ 고정비 추가",
+    fixSumLabel: "고정비 배분(1회) = (월고정비 합계 ÷ 월 근무일)",
+    fixSumHint: "예) 월 고정비 1,000,000원 / 월 근무일 20일 = 50,000원 (1회 기준 고정비)",
+    workDaysLabel: "월 근무일(일)",
+    touchUpTitle: "리터치 1회 포함",
+    touchUpDesc: '체크 시 원가(재료+소모품+기타+인건비+고정비)가 <b>2배</b>로 계산 (수수료는 결제 1회 기준)',
+    autoCalcPill: "원가/마진 자동 계산",
+    resetBtn: "초기화",
+    calcBtn: "계산하기",
+    resultTitle: "2) 결과",
+    statusWait: "입력 후 계산",
+    statusGood: "흑자",
+    statusBad: "적자",
+    statusCheck: "입력값 확인",
+    kpiCostTitle: "총원가(1회)",
+    kpiCostDesc: "변동비 + 인건비 + 고정비 + 수수료",
+    kpiProfitTitle: "순이익(1회)",
+    kpiProfitDesc: "판매가 - 총원가",
+    kpiMarginTitle: "이익률",
+    kpiMarginDesc: "순이익 ÷ 판매가",
+    kpiHourTitle: "시간당 이익",
+    kpiHourDesc: "순이익 ÷ (소요시간/60)",
+    rowPrice: "판매가",
+    rowFee: "수수료(%) + 고정",
+    rowMaterial: "재료비(1회)",
+    rowConsumable: "소모품비(1회)",
+    rowOtherVar: "기타 변동비(1회)",
+    rowLabor: "인건비(시급×시간)",
+    rowFixed: "고정비 배분(1회)",
+    rowTouchUp: "리터치 포함 배율",
+    suggestPricePill: "권장 가격 계산",
+    copyBtn: "결과 복사",
+    targetMarginLabel: "목표 이익률(%)",
+    requiredPriceLabel: "필요 판매가(원)",
+    noteDefault: '입력값을 채우고 "계산하기"를 누르면 상세가 표시됩니다.',
+    noteNoPrice: "판매가를 입력하면 계산이 의미가 있습니다.",
+    noteCopied: "클립보드에 복사 완료!",
+    noteCopyFail: "복사 실패(브라우저 권한). 수동 복사:",
+    touchUpOn: "ON (2배)",
+    touchUpOff: "OFF",
+    touchUp2x: "2배 (리터치 1회 포함)",
+    touchUp1x: "1배 (기본)",
+    copyHeader: "반영구 원가 계산 결과 (YEVOON)",
+    copyPreset: "시술",
+    copyTouchUp: "리터치 포함",
+    copySalePrice: "판매가",
+    copyTotalCost: "총원가",
+    copyProfit: "순이익",
+    copyMargin: "이익률",
+    copyMaterial: "재료비",
+    copyConsumable: "소모품비",
+    copyFixed: "고정비배분",
+    p_custom: "직접 입력",
+    p_emboss: "엠보",
+    p_combo: "콤보",
+    p_hairstroke: "헤어스트록",
+    p_machinefeather: "머신페더링",
+    p_ombreMachine: "옴브레머신",
+    p_lip: "입술",
+    p_overlip: "오버립",
+    p_hairline: "헤어라인",
+    p_eyeliner: "아이라인",
+    p_beautyspot: "미인점",
+    phName: "항목명 (예: 색소)",
+    phTotal: "총 구매가",
+    phUses: "사용횟수(명/회)",
+    phFixName: "항목명 (예: 월세)",
+    phFixTotal: "월 금액",
+    phFixUses: "비워도 됨",
+    delTitle: "삭제",
+  }
+};
+
+// 當前語言
+let curLang = 'zh';
+
+// ========== [2] 預設值 PRESETS ==========
+const PRESETS_DATA = {
+  custom:         { price: 0,      minutes: 0,   material: 0,     consumable: 0,     otherVar: 0 },
+  emboss:         { price: 250000, minutes: 120, material: 9000,  consumable: 12000, otherVar: 0 },
+  combo:          { price: 270000, minutes: 130, material: 10000, consumable: 13000, otherVar: 0 },
+  hairstroke:     { price: 300000, minutes: 150, material: 12000, consumable: 14000, otherVar: 0 },
+  machinefeather: { price: 280000, minutes: 140, material: 11000, consumable: 14000, otherVar: 0 },
+  ombreMachine:   { price: 260000, minutes: 130, material: 10000, consumable: 13000, otherVar: 0 },
+  lip:            { price: 300000, minutes: 150, material: 12000, consumable: 13000, otherVar: 0 },
+  overlip:        { price: 320000, minutes: 160, material: 13000, consumable: 13500, otherVar: 0 },
+  hairline:       { price: 350000, minutes: 180, material: 15000, consumable: 16000, otherVar: 0 },
+  eyeliner:       { price: 220000, minutes: 110, material: 8000,  consumable: 11000, otherVar: 0 },
+  beautyspot:     { price: 80000,  minutes: 40,  material: 3000,  consumable: 5000,  otherVar: 0 },
+};
+
+// 預設選項順序（對應 LANG 的 p_ 鍵）
+const PRESET_KEYS = ['custom','emboss','combo','hairstroke','machinefeather','ombreMachine','lip','overlip','hairline','eyeliner','beautyspot'];
+
+// ========== [3] 工具函數（格式化、取值）==========
+const $ = (id) => document.getElementById(id);
+
+// 格式化金額
+const fmt = (n) => {
+  if (!isFinite(n)) return "-";
+  const sign = n < 0 ? "-" : "";
+  n = Math.abs(n);
+  return sign + "₩" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+// 格式化百分比
+const fmtPct = (x) => isFinite(x) ? (x * 100).toFixed(1) + "%" : "-";
+
+// 取數字值（空值或無效回傳 0）
+function num(id) {
+  const v = parseFloat($(id).value);
+  return isFinite(v) ? v : 0;
+}
+
+// 取當前語言文字
+function t(key) {
+  return LANG[curLang][key] || key;
+}
+
+// ========== [4] 細項面板邏輯 ==========
+
+// 建立一列細項（材料/耗材/固定費共用模板）
+function rowTemplate(kind) {
+  const row = document.createElement("div");
+  row.className = "itemRow";
+  const isFixed = (kind === 'fix');
+  row.innerHTML = `
+    <input data-k="${kind}" data-f="name" type="text" placeholder="${isFixed ? t('phFixName') : t('phName')}" />
+    <input data-k="${kind}" data-f="total" type="number" inputmode="decimal" min="0" step="100" placeholder="${isFixed ? t('phFixTotal') : t('phTotal')}" />
+    <input data-k="${kind}" data-f="uses" type="number" inputmode="decimal" min="0" step="1" placeholder="${isFixed ? t('phFixUses') : t('phUses')}" />
+    <button class="delBtn" type="button" title="${t('delTitle')}">×</button>
+  `;
+  // 刪除按鈕事件
+  row.querySelector(".delBtn").addEventListener("click", () => {
+    row.remove();
+    syncDetailsToMain();
+    calc();
+  });
+  // 輸入即時同步
+  row.querySelectorAll("input").forEach(inp => {
+    inp.addEventListener("input", () => {
+      syncDetailsToMain();
+      calc();
+    });
+  });
+  return row;
+}
+
+// 計算「總額 ÷ 次數」的合計（材料/耗材用）
+function sumPerUse(containerId) {
+  const rows = [...$(containerId).querySelectorAll(".itemRow")];
+  let sum = 0;
+  rows.forEach(r => {
+    const total = parseFloat(r.querySelector('[data-f="total"]').value);
+    const uses  = parseFloat(r.querySelector('[data-f="uses"]').value);
+    if (isFinite(total) && isFinite(uses) && uses > 0) {
+      sum += (total / uses);
+    }
+  });
+  return sum;
+}
+
+// 計算月固定費合計
+function sumMonthlyFixed() {
+  const rows = [...$("fixedRows").querySelectorAll(".itemRow")];
+  let sum = 0;
+  rows.forEach(r => {
+    const total = parseFloat(r.querySelector('[data-f="total"]').value);
+    if (isFinite(total)) sum += total;
+  });
+  return sum;
+}
+
+// 固定費分攤 = 月固定費 ÷ 月工作天數
+function fixedAllocFromDetails() {
+  const workDays = num("workDays");
+  const monthlyFixed = sumMonthlyFixed();
+  if (workDays <= 0) return 0;
+  return monthlyFixed / workDays;
+}
+
+// 將細項計算結果同步回主欄位
+function syncDetailsToMain() {
+  if ($("useMaterialDetail").checked) {
+    const s = sumPerUse("materialRows");
+    $("material").value = Math.round(s);
+    $("materialSumText").textContent = fmt(s);
+  } else {
+    $("materialSumText").textContent = "-";
+  }
+
+  if ($("useConsumableDetail").checked) {
+    const s = sumPerUse("consumableRows");
+    $("consumable").value = Math.round(s);
+    $("consumableSumText").textContent = fmt(s);
+  } else {
+    $("consumableSumText").textContent = "-";
+  }
+
+  if ($("useFixedDetail").checked) {
+    const alloc = fixedAllocFromDetails();
+    $("fixedAlloc").value = Math.round(alloc);
+    $("fixedSumText").textContent = fmt(alloc);
+  } else {
+    $("fixedSumText").textContent = "-";
+  }
+}
+
+// ========== [5] 核心計算 calculate() ==========
+function calc() {
+  syncDetailsToMain();
+
+  const price = num("price");
+  const minutes = num("minutes");
+  const hours = minutes / 60;
+
+  const material   = num("material");
+  const consumable = num("consumable");
+  const otherVar   = num("otherVar");
+
+  const hourlyWage = num("hourlyWage");
+  const labor = hourlyWage * hours;
+
+  const fixedAlloc = num("fixedAlloc");
+
+  const feeRate  = num("feeRate") / 100;
+  const feeFixed = num("feeFixed");
+
+  const includeTouchUp = $("includeTouchUp").checked;
+  const touchUpFactor = includeTouchUp ? 2 : 1;
+
+  // 基礎成本（不含手續費）
+  const baseCostNoFee = material + consumable + otherVar + labor + fixedAlloc;
+  // 乘以補色倍率
+  const baseCostAdjusted = baseCostNoFee * touchUpFactor;
+  // 手續費（僅計算 1 次）
+  const fee = price * feeRate + feeFixed;
+
+  // 總成本 = 調整後基礎成本 + 手續費
+  const totalCost = baseCostAdjusted + fee;
+  const profit = price - totalCost;
+  const margin = (price > 0) ? (profit / price) : NaN;
+  const profitPerHour = (hours > 0) ? (profit / hours) : NaN;
+
+  // 目標利潤率 → 建議售價
+  const targetMargin = num("targetMargin") / 100;
+  const denom = 1 - feeRate - targetMargin;
+  const requiredPrice = denom > 0 ? (baseCostAdjusted + feeFixed) / denom : NaN;
+
+  // ========== [6] 渲染 render() ==========
+  $("totalCost").textContent = fmt(totalCost);
+  $("profit").textContent = fmt(profit);
+  $("margin").textContent = fmtPct(margin);
+  $("profitPerHour").textContent = fmt(profitPerHour);
+
+  // 利潤數字顏色
+  $("profit").style.color = profit >= 0 ? "var(--good)" : "var(--bad)";
+  $("margin").style.color = profit >= 0 ? "var(--good)" : "var(--bad)";
+
+  // 明細表
+  $("d_price").textContent = fmt(price);
+  $("d_fee").textContent = `${fmt(fee)}  (${(feeRate * 100).toFixed(1)}% + ${fmt(feeFixed)})`;
+  $("d_material").textContent = fmt(material);
+  $("d_consumable").textContent = fmt(consumable);
+  $("d_otherVar").textContent = fmt(otherVar);
+  $("d_labor").textContent = `${fmt(labor)}  (${fmt(hourlyWage)}/h × ${hours.toFixed(2)}h)`;
+  $("d_fixedAlloc").textContent = fmt(fixedAlloc);
+  $("d_touchUp").textContent = includeTouchUp ? t('touchUp2x') : t('touchUp1x');
+  $("requiredPrice").value = fmt(requiredPrice);
+
+  // 狀態標籤
+  const pill = $("statusPill");
+  if (!isFinite(margin)) {
+    pill.textContent = t('statusCheck');
+    pill.className = "pill";
+  } else if (profit >= 0) {
+    pill.textContent = t('statusGood');
+    pill.className = "pill good";
+  } else {
+    pill.textContent = t('statusBad');
+    pill.className = "pill bad";
+  }
+
+  // pill ON/OFF 切換
+  $("touchUpPill").textContent = includeTouchUp ? t('touchUpOn') : t('touchUpOff');
+  $("touchUpPill").className = includeTouchUp ? "pill good" : "pill";
+
+  $("matPill").textContent = $("useMaterialDetail").checked ? "ON" : "OFF";
+  $("matPill").className = $("useMaterialDetail").checked ? "pill good" : "pill";
+
+  $("conPill").textContent = $("useConsumableDetail").checked ? "ON" : "OFF";
+  $("conPill").className = $("useConsumableDetail").checked ? "pill good" : "pill";
+
+  $("fixPill").textContent = $("useFixedDetail").checked ? "ON" : "OFF";
+  $("fixPill").className = $("useFixedDetail").checked ? "pill good" : "pill";
+
+  // 底部提示
+  const note = $("note");
+  if (price <= 0) {
+    note.textContent = t('noteNoPrice');
+  } else {
+    note.textContent = `${t('kpiCostTitle')} ${fmt(totalCost)} / ${t('kpiProfitTitle')} ${fmt(profit)} / ${t('kpiMarginTitle')} ${fmtPct(margin)}`;
+  }
+}
+
+// ========== [7] 語言切換 setLang() ==========
+function setLang(lang) {
+  curLang = lang;
+  // 切換按鈕 active 狀態
+  $("langZh").classList.toggle("active", lang === 'zh');
+  $("langKo").classList.toggle("active", lang === 'ko');
+  // 更新 html lang 屬性
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'ko';
+
+  // 更新所有帶 data-i18n 的元素
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    const val = LANG[curLang][key];
+    if (val !== undefined) {
+      // 含 HTML 標籤的用 innerHTML，否則用 textContent
+      if (val.includes("<")) {
+        el.innerHTML = val;
+      } else {
+        el.textContent = val;
+      }
+    }
+  });
+
+  // 重建預設下拉選單
+  buildPresetOptions();
+
+  // 更新已存在的細項列佔位文字
+  document.querySelectorAll("#materialRows .itemRow, #consumableRows .itemRow").forEach(row => {
+    row.querySelector('[data-f="name"]').placeholder = t('phName');
+    row.querySelector('[data-f="total"]').placeholder = t('phTotal');
+    row.querySelector('[data-f="uses"]').placeholder = t('phUses');
+    row.querySelector('.delBtn').title = t('delTitle');
+  });
+  document.querySelectorAll("#fixedRows .itemRow").forEach(row => {
+    row.querySelector('[data-f="name"]').placeholder = t('phFixName');
+    row.querySelector('[data-f="total"]').placeholder = t('phFixTotal');
+    row.querySelector('[data-f="uses"]').placeholder = t('phFixUses');
+    row.querySelector('.delBtn').title = t('delTitle');
+  });
+
+  // 重新計算以更新結果區文字
+  calc();
+}
+
+// 建立預設下拉選項
+function buildPresetOptions() {
+  const sel = $("preset");
+  const curVal = sel.value;
+  sel.innerHTML = "";
+  PRESET_KEYS.forEach(key => {
+    const opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = t('p_' + key);
+    sel.appendChild(opt);
+  });
+  // 保持當前選中值
+  if (PRESET_KEYS.includes(curVal)) sel.value = curVal;
+}
+
+// ========== [8] 預設套用 applyPreset() ==========
+function applyPreset(p) {
+  if (!PRESETS_DATA[p] || p === 'custom') return;
+  $("price").value = PRESETS_DATA[p].price;
+  $("minutes").value = PRESETS_DATA[p].minutes;
+  $("material").value = PRESETS_DATA[p].material;
+  $("consumable").value = PRESETS_DATA[p].consumable;
+  $("otherVar").value = PRESETS_DATA[p].otherVar;
+}
+
+// ========== [9] 重置 resetAll() ==========
+function resetAll() {
+  $("preset").value = "custom";
+  ["price","minutes","material","consumable","otherVar","hourlyWage","fixedAlloc","feeRate","feeFixed"].forEach(id => {
+    $(id).value = "";
+  });
+  $("targetMargin").value = 55;
+  $("workDays").value = 20;
+
+  $("includeTouchUp").checked = false;
+  $("useMaterialDetail").checked = false;
+  $("useConsumableDetail").checked = false;
+  $("useFixedDetail").checked = false;
+
+  $("materialRows").innerHTML = "";
+  $("consumableRows").innerHTML = "";
+  $("fixedRows").innerHTML = "";
+
+  $("materialPanel").classList.remove("show");
+  $("consumablePanel").classList.remove("show");
+  $("fixedPanel").classList.remove("show");
+
+  $("materialSumText").textContent = "-";
+  $("consumableSumText").textContent = "-";
+  $("fixedSumText").textContent = "-";
+
+  $("totalCost").textContent = "-";
+  $("profit").textContent = "-";
+  $("profit").style.color = "";
+  $("margin").textContent = "-";
+  $("margin").style.color = "";
+  $("profitPerHour").textContent = "-";
+
+  ["d_price","d_fee","d_material","d_consumable","d_otherVar","d_labor","d_fixedAlloc","d_touchUp"].forEach(id => $(id).textContent = "-");
+
+  $("statusPill").textContent = t('statusWait');
+  $("statusPill").className = "pill";
+  $("note").textContent = t('noteDefault');
+
+  $("touchUpPill").textContent = "OFF"; $("touchUpPill").className = "pill";
+  $("matPill").textContent = "OFF"; $("matPill").className = "pill";
+  $("conPill").textContent = "OFF"; $("conPill").className = "pill";
+  $("fixPill").textContent = "OFF"; $("fixPill").className = "pill";
+
+  $("requiredPrice").value = "";
+}
+
+// ========== [10] 複製結果 copyResult() ==========
+async function copyResult() {
+  calc();
+  const text = [
+    t('copyHeader'),
+    `- ${t('copyPreset')}: ${$("preset").options[$("preset").selectedIndex].text}`,
+    `- ${t('copyTouchUp')}: ${$("includeTouchUp").checked ? t('touchUpOn') : "OFF"}`,
+    `- ${t('copySalePrice')}: ${$("d_price").textContent}`,
+    `- ${t('copyTotalCost')}: ${$("totalCost").textContent}`,
+    `- ${t('copyProfit')}: ${$("profit").textContent}`,
+    `- ${t('copyMargin')}: ${$("margin").textContent}`,
+    `- ${t('copyMaterial')}: ${$("d_material").textContent}`,
+    `- ${t('copyConsumable')}: ${$("d_consumable").textContent}`,
+    `- ${t('copyFixed')}: ${$("d_fixedAlloc").textContent}`,
+  ].join("\n");
+  try {
+    await navigator.clipboard.writeText(text);
+    $("note").textContent = t('noteCopied');
+  } catch(e) {
+    $("note").textContent = t('noteCopyFail') + "\n" + text;
+  }
+}
+
+// ========== [11] 事件綁定（只綁一次）==========
+
+// 預設下拉變更
+$("preset").addEventListener("change", (e) => { applyPreset(e.target.value); calc(); });
+
+// 補色勾選
+$("includeTouchUp").addEventListener("change", () => calc());
+
+// 材料費細項勾選
+$("useMaterialDetail").addEventListener("change", () => {
+  $("materialPanel").classList.toggle("show", $("useMaterialDetail").checked);
+  calc();
+});
+// 耗材費細項勾選
+$("useConsumableDetail").addEventListener("change", () => {
+  $("consumablePanel").classList.toggle("show", $("useConsumableDetail").checked);
+  calc();
+});
+// 固定成本細項勾選
+$("useFixedDetail").addEventListener("change", () => {
+  $("fixedPanel").classList.toggle("show", $("useFixedDetail").checked);
+  calc();
+});
+
+// 新增材料
+$("addMaterialBtn").addEventListener("click", () => {
+  $("materialRows").appendChild(rowTemplate("mat"));
+  calc();
+});
+// 新增耗材
+$("addConsumableBtn").addEventListener("click", () => {
+  $("consumableRows").appendChild(rowTemplate("con"));
+  calc();
+});
+// 新增固定費
+$("addFixedBtn").addEventListener("click", () => {
+  const row = rowTemplate("fix");
+  $("fixedRows").appendChild(row);
+  calc();
+});
+
+// 表單 submit（手機鍵盤「完成鍵」也能觸發計算）
+$("calcForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  calc();
+});
+
+// 所有輸入欄位即時自動計算
+["price","minutes","material","consumable","otherVar","hourlyWage","fixedAlloc","feeRate","feeFixed","targetMargin","workDays"]
+  .forEach(id => $(id).addEventListener("input", () => calc()));
+
+// 重置按鈕
+$("resetBtn").addEventListener("click", () => resetAll());
+
+// 複製結果按鈕
+$("copyBtn").addEventListener("click", () => copyResult());
+
+// ========== [12] PWA Service Worker ==========
+(function registerPWA() {
+  // 動態建立 manifest
+  const manifest = {
+    name: "YEVOON 紋繡成本計算器",
+    short_name: "YEVOON計算器",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#f0f7ff",
+    theme_color: "#5ba3d9",
+    icons: [{
+      src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#5ba3d9"/><text x="50" y="62" text-anchor="middle" font-size="36" font-weight="bold" fill="#fff" font-family="sans-serif">YV</text></svg>'),
+      sizes: "any",
+      type: "image/svg+xml"
+    }]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+  const manifestURL = URL.createObjectURL(manifestBlob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = manifestURL;
+  document.head.appendChild(link);
+
+  // 動態註冊 Service Worker（離線快取）
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      const CACHE = 'yevoon-calc-v1';
+      self.addEventListener('install', e => {
+        e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html'])));
+        self.skipWaiting();
+      });
+      self.addEventListener('fetch', e => {
+        e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+      });
+    `;
+    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+    const swURL = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swURL).catch(() => {});
+  }
+})();
+
+// ========== [13] 初始化 ==========
+buildPresetOptions();
+resetAll();
+</script>
+</body>
+</html>
