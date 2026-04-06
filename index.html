@@ -372,7 +372,7 @@
       <div class="grid">
         <!-- 施術種類 -->
         <div class="field">
-          <label><span data-i18n="presetLabel">施術種類</span> <span class="mini" data-i18n="presetMini">預設值</span></label>
+          <label><span data-i18n="presetLabel">施作類型</span> <span class="mini" data-i18n="presetMini">預設值</span></label>
           <select id="preset"></select>
           <div class="hint" data-i18n="presetHint">預設值為參考範例，可依自身店鋪調整。</div>
         </div>
@@ -605,7 +605,7 @@ const LANG = {
     subtitle: "材料/耗材以「總購買價 ÷ 可用次數」自動計算單次成本。<br/>固定成本以「月固定費 ÷ 月工作天數」分攤至每次施術。",
     inputTitle: "1) 施術/成本輸入",
     unitPill: "單位：台幣($)・時間：分鐘",
-    presetLabel: "施術種類",
+    presetLabel: "施作類型",
     presetMini: "預設值",
     presetHint: "預設值為參考範例，可依自身店鋪調整。",
     priceLabel: "售價（客戶付款金額）",
@@ -692,15 +692,16 @@ const LANG = {
     // 預設選項名稱
     p_custom: "自訂輸入",
     p_emboss: "霧眉",
-    p_combo: "絲霧眉",
-    p_hairstroke: "線條眉",
-    p_machinefeather: "機器羽毛",
-    p_ombreMachine: "漸層機器",
-    p_lip: "嘟嘟唇",
-    p_overlip: "滿版唇",
+    p_combo: "飄霧眉",
+    p_hairstroke: "飄眉",
+    p_machinefeather: "機器野生眉",
+    p_ombreMachine: "機器霧眉",
+    p_lip: "霧唇",
     p_hairline: "髮際線",
-    p_eyeliner: "美瞳線",
     p_beautyspot: "美人痣",
+    p_keratin: "角蛋白",
+    p_silkworm: "臥蠶",
+    p_browTint: "染眉",
     // 細項佔位文字
     phName: "品名（例：色料）",
     phTotal: "總購買價",
@@ -801,15 +802,16 @@ const LANG = {
     copyFixed: "고정비배분",
     p_custom: "직접 입력",
     p_emboss: "엠보",
-    p_combo: "콤보",
-    p_hairstroke: "헤어스트록",
-    p_machinefeather: "머신페더링",
-    p_ombreMachine: "옴브레머신",
-    p_lip: "입술",
-    p_overlip: "오버립",
+    p_combo: "페더포그",
+    p_hairstroke: "페더링",
+    p_machinefeather: "머신와일드브로우",
+    p_ombreMachine: "머신포그브로우",
+    p_lip: "포그립",
     p_hairline: "헤어라인",
-    p_eyeliner: "아이라인",
     p_beautyspot: "미인점",
+    p_keratin: "케라틴",
+    p_silkworm: "와잠",
+    p_browTint: "눈썹염색",
     phName: "항목명 (예: 색소)",
     phTotal: "총 구매가",
     phUses: "사용횟수(명/회)",
@@ -832,14 +834,15 @@ const PRESETS_DATA = {
   machinefeather: { price: 7000, minutes: 140, material: 350, consumable: 450, otherVar: 0 },
   ombreMachine:   { price: 6500, minutes: 130, material: 350, consumable: 450, otherVar: 0 },
   lip:            { price: 8000, minutes: 150, material: 400, consumable: 450, otherVar: 0 },
-  overlip:        { price: 9000, minutes: 160, material: 450, consumable: 500, otherVar: 0 },
   hairline:       { price: 10000,minutes: 180, material: 500, consumable: 550, otherVar: 0 },
-  eyeliner:       { price: 5500, minutes: 110, material: 250, consumable: 350, otherVar: 0 },
   beautyspot:     { price: 2000, minutes: 40,  material: 100, consumable: 150, otherVar: 0 },
+  keratin:        { price: 1400, minutes: 60,  material: 200, consumable: 300, otherVar: 0 },
+  silkworm:       { price: 5000, minutes: 90,  material: 300, consumable: 400, otherVar: 0 },
+  browTint:       { price: 500,  minutes: 30,  material: 100, consumable: 150, otherVar: 0 },
 };
 
 // 預設選項順序（對應 LANG 的 p_ 鍵）
-const PRESET_KEYS = ['custom','emboss','combo','hairstroke','machinefeather','ombreMachine','lip','overlip','hairline','eyeliner','beautyspot'];
+const PRESET_KEYS = ['custom','emboss','combo','hairstroke','machinefeather','ombreMachine','lip','hairline','beautyspot','keratin','silkworm','browTint'];
 
 // ========== [3] 工具函數（格式化、取值）==========
 const $ = (id) => document.getElementById(id);
