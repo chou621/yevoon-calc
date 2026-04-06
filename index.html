@@ -24,6 +24,16 @@
       --line: rgba(167,215,255,0.35);
       --shadow: 0 4px 20px rgba(90,150,200,0.10);
       --radius: 16px;
+      /* 動畫變數 */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration: 0.35s;
+      /* 圓餅圖色彩 */
+      --pie-material: #5ba3d9;
+      --pie-consumable: #a7d7ff;
+      --pie-otherVar: #8e9faf;
+      --pie-labor: #6bcf9a;
+      --pie-fixed: #f0c674;
+      --pie-fee: #f28b82;
     }
 
     * { box-sizing: border-box; }
@@ -36,6 +46,29 @@
       min-height: 100vh;
     }
 
+    /* ========== 動畫 Keyframes ========== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(2px); }
+    }
+    @keyframes pulseGlow {
+      0%   { box-shadow: 0 0 0 0 rgba(107,207,154,0.35); }
+      70%  { box-shadow: 0 0 0 8px rgba(107,207,154,0); }
+      100% { box-shadow: 0 0 0 0 rgba(107,207,154,0); }
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0.85); opacity: 0; }
+      60%  { transform: scale(1.03); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
     /* ========== 頂部列 ========== */
     header {
       padding: 22px 16px 10px;
@@ -46,6 +79,7 @@
       justify-content: space-between;
       gap: 12px;
       flex-wrap: wrap;
+      animation: fadeInUp 0.6s var(--ease-out) both;
     }
     .header-left { flex: 1; min-width: 200px; }
     h1 {
@@ -93,7 +127,7 @@
       cursor: pointer;
       background: var(--card);
       color: var(--muted);
-      transition: all .2s;
+      transition: all .25s var(--ease-out);
     }
     .lang-toggle button.active {
       background: var(--accent-dark);
@@ -118,6 +152,14 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 16px;
+      transition: transform var(--duration) var(--ease-out), box-shadow var(--duration) var(--ease-out);
+      animation: fadeInUp 0.6s var(--ease-out) both;
+    }
+    .card:nth-child(1) { animation-delay: 0.08s; }
+    .card:nth-child(2) { animation-delay: 0.18s; }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(90,150,200,0.16);
     }
     .card h2 {
       margin: 0 0 10px;
@@ -136,7 +178,9 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       background: rgba(167,215,255,0.06);
+      transition: border-color var(--duration);
     }
+    .field:focus-within { border-color: var(--accent-dark); }
     .field label {
       display: flex;
       justify-content: space-between;
@@ -182,10 +226,10 @@
       font-size: 14px;
       color: var(--text-on-accent);
       background: var(--accent-dark);
-      transition: background .2s;
+      transition: background .2s, transform .15s var(--ease-out);
     }
     button:hover { background: var(--accent-deeper); }
-    button:active { transform: translateY(1px); }
+    button:active { transform: scale(0.96); }
     button.secondary {
       background: rgba(167,215,255,0.15);
       color: var(--accent-deeper);
@@ -205,6 +249,7 @@
       border: 1px solid var(--line);
       background: rgba(167,215,255,0.1);
       color: var(--muted);
+      transition: all .3s var(--ease-out);
     }
     .pill.good { color: #2a9d5c; background: rgba(107,207,154,0.12); border-color: rgba(107,207,154,0.3); }
     .pill.bad  { color: #d04040; background: rgba(242,139,130,0.12); border-color: rgba(242,139,130,0.3); }
@@ -229,10 +274,17 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       background: rgba(167,215,255,0.06);
+      transition: border-color var(--duration), transform var(--duration) var(--ease-out);
     }
+    .kpi .box:hover { border-color: var(--accent-dark); transform: translateY(-1px); }
     .kpi .box .t { color: var(--muted); font-size: 12px; font-weight: 600; margin-bottom: 6px; }
-    .kpi .box .v { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; color: var(--text); }
+    .kpi .box .v {
+      font-size: 18px; font-weight: 800; letter-spacing: -0.3px; color: var(--text);
+      transition: color .3s;
+    }
     .kpi .box .s { font-size: 11px; margin-top: 6px; color: var(--muted); line-height: 1.4; }
+    .kpi .box.glow { animation: pulseGlow 0.8s ease; }
+    .v.shake { animation: shake 0.4s ease; }
 
     /* ========== 明細表格 ========== */
     .table {
@@ -263,23 +315,33 @@
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       padding: 10px; border: 1px solid var(--line); border-radius: 12px;
       background: rgba(167,215,255,0.06); margin-top: 10px;
+      transition: border-color var(--duration);
+      cursor: pointer;
     }
+    .chkWrap:hover { border-color: var(--accent-dark); }
     .chk { display: flex; gap: 10px; align-items: flex-start; }
     .chk input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent-dark); }
     .chk .txt { display: flex; flex-direction: column; gap: 4px; }
     .chk .txt .t { font-size: 13px; font-weight: 700; color: var(--text); }
     .chk .txt .d { font-size: 11px; color: var(--muted); line-height: 1.4; }
 
-    /* ========== 細項面板 ========== */
+    /* ========== 細項面板（動畫展開/收合）========== */
     .detailPanel {
       margin-top: 10px;
       border: 1px dashed var(--line);
       border-radius: 12px;
       background: rgba(167,215,255,0.04);
-      padding: 10px;
-      display: none;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      padding: 0 10px;
+      transition: max-height 0.45s var(--ease-out), opacity 0.35s ease, padding 0.35s ease;
     }
-    .detailPanel.show { display: block; }
+    .detailPanel.show {
+      max-height: 2000px;
+      opacity: 1;
+      padding: 10px;
+    }
     .listHeader {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       margin: 4px 2px 10px;
@@ -291,6 +353,7 @@
       grid-template-columns: 1.3fr 1fr 1fr auto;
       gap: 8px;
       align-items: center;
+      animation: fadeInUp 0.3s var(--ease-out) both;
     }
     @media (max-width: 520px) {
       .itemRow { grid-template-columns: 1fr 1fr; }
@@ -305,6 +368,7 @@
       outline: none;
       font-size: 13px;
       font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
     }
     .itemRow input:focus {
       border-color: var(--accent-dark);
@@ -329,6 +393,190 @@
       font-size: 12px; color: var(--text);
     }
     .sumLine b { font-size: 13px; }
+
+    /* ========== 圓餅圖 ========== */
+    .pieSection { margin-top: 14px; }
+    .pieWrap {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(167,215,255,0.04);
+    }
+    @media (max-width: 520px) { .pieWrap { flex-direction: column; } }
+    .pieChart {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--line);
+      transition: background 0.6s ease;
+      position: relative;
+    }
+    .pieChart::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 50px; height: 50px;
+      background: var(--card);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .pieLegend { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .pieLegend .item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text);
+      padding: 3px 6px; border-radius: 6px;
+      transition: background .2s;
+      cursor: default;
+    }
+    .pieLegend .item:hover { background: rgba(167,215,255,0.1); }
+    .pieLegend .dot {
+      width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+    }
+    .pieLegend .pct { margin-left: auto; font-weight: 700; color: var(--muted); font-size: 11px; }
+
+    /* ========== 商業分析工具 ========== */
+    .bizSection {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: rgba(167,215,255,0.04);
+    }
+    .bizSection h3 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-deeper);
+    }
+    .bizGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    @media (max-width: 520px) { .bizGrid { grid-template-columns: 1fr; } }
+    .bizBox {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(167,215,255,0.06);
+      transition: border-color var(--duration);
+    }
+    .bizBox:hover { border-color: var(--accent-dark); }
+    .bizBox .label { font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .bizBox .val { font-size: 16px; font-weight: 800; color: var(--text); }
+    .bizBox .val.good { color: var(--good); }
+    .bizBox .val.bad { color: var(--bad); }
+    .bizBox .val.warn { color: #d4a017; }
+    .bizInput {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .bizInput:focus {
+      border-color: var(--accent-dark);
+      box-shadow: 0 0 0 3px rgba(167,215,255,0.35);
+    }
+    .bizDivider {
+      border: none;
+      border-top: 1px dashed var(--line);
+      margin: 10px 0;
+    }
+
+    /* ========== 場景比較 ========== */
+    .scenarioSection {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 16px 14px;
+      animation: fadeInUp 0.6s var(--ease-out) 0.28s both;
+    }
+    .scenarioCard {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      transition: transform var(--duration) var(--ease-out), box-shadow var(--duration) var(--ease-out);
+    }
+    .scenarioCard:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(90,150,200,0.16);
+    }
+    .scenarioList { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .scenarioEmpty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 20px 10px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+    }
+    .scenarioItem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(167,215,255,0.04);
+      animation: popIn 0.3s var(--ease-out) both;
+      transition: border-color var(--duration);
+    }
+    .scenarioItem:hover { border-color: var(--accent-dark); }
+    .scenarioInfo { flex: 1; min-width: 0; }
+    .scenarioInfo .name { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .scenarioInfo .meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .scenarioBar {
+      flex: 1;
+      height: 22px;
+      border-radius: 6px;
+      background: rgba(167,215,255,0.12);
+      overflow: hidden;
+      position: relative;
+      min-width: 80px;
+    }
+    .scenarioBar .fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.5s var(--ease-out);
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 6px;
+      font-size: 10px; font-weight: 700; color: #fff;
+      white-space: nowrap;
+    }
+    .scenarioBar .fill.pos { background: linear-gradient(90deg, var(--good), #4fb87a); }
+    .scenarioBar .fill.neg { background: linear-gradient(90deg, var(--bad), #e06060); }
+    .scenarioBtns { display: flex; gap: 4px; flex-shrink: 0; }
+    .scenarioBtns button { padding: 6px 8px; font-size: 11px; border-radius: 8px; }
+
+    /* ========== 自動儲存提示 ========== */
+    .saveIndicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent-dark);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .3s, transform .3s var(--ease-out);
+      pointer-events: none;
+      z-index: 100;
+    }
+    .saveIndicator.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* ========== 頁尾 ========== */
     footer {
@@ -426,7 +674,7 @@
         </div>
       </div>
 
-      <!-- ☐ 材料費細項 -->
+      <!-- 材料費細項 -->
       <div class="chkWrap">
         <div class="chk">
           <input id="useMaterialDetail" type="checkbox" />
@@ -450,7 +698,7 @@
         <div class="hint" data-i18n="matSumHint">例）色料 1,200元 / 4次使用 → 300元/次</div>
       </div>
 
-      <!-- ☐ 耗材費細項 -->
+      <!-- 耗材費細項 -->
       <div class="chkWrap">
         <div class="chk">
           <input id="useConsumableDetail" type="checkbox" />
@@ -474,7 +722,7 @@
         <div class="hint" data-i18n="conSumHint">例）修護膏 600元 / 50個 → 12元/次</div>
       </div>
 
-      <!-- ☐ 固定成本細項 -->
+      <!-- 固定成本細項 -->
       <div class="chkWrap">
         <div class="chk">
           <input id="useFixedDetail" type="checkbox" />
@@ -504,7 +752,7 @@
         <div class="hint" data-i18n="fixSumHint">例）月固定費 30,000元 / 月工作日 20天 = 1,500元（單次固定成本）</div>
       </div>
 
-      <!-- ☐ 含補色1次 -->
+      <!-- 含補色1次 -->
       <div class="chkWrap">
         <div class="chk">
           <input id="includeTouchUp" type="checkbox" />
@@ -535,12 +783,12 @@
     </div>
 
     <div class="kpi">
-      <div class="box">
+      <div class="box" id="kpiCostBox">
         <div class="t" data-i18n="kpiCostTitle">總成本（單次）</div>
         <div class="v" id="totalCost">-</div>
         <div class="s" data-i18n="kpiCostDesc">變動成本 + 人工 + 固定分攤 + 手續費</div>
       </div>
-      <div class="box">
+      <div class="box" id="kpiProfitBox">
         <div class="t" data-i18n="kpiProfitTitle">淨利潤（單次）</div>
         <div class="v" id="profit">-</div>
         <div class="s" data-i18n="kpiProfitDesc">售價 − 總成本</div>
@@ -554,6 +802,17 @@
         <div class="t" data-i18n="kpiHourTitle">時薪利潤</div>
         <div class="v" id="profitPerHour">-</div>
         <div class="s" data-i18n="kpiHourDesc">淨利潤 ÷（所需時間/60）</div>
+      </div>
+    </div>
+
+    <!-- 圓餅圖 -->
+    <div class="pieSection">
+      <div class="flexTitle" style="margin-top:14px; margin-bottom:6px;">
+        <span class="pill" data-i18n="pieTitle">成本結構</span>
+      </div>
+      <div class="pieWrap">
+        <div class="pieChart" id="pieChart"></div>
+        <div class="pieLegend" id="pieLegend"></div>
       </div>
     </div>
 
@@ -588,14 +847,77 @@
       </div>
     </div>
 
+    <!-- 商業分析工具 -->
+    <div class="bizSection">
+      <h3 data-i18n="bizTitle">商業分析</h3>
+
+      <!-- 月營收預估 -->
+      <div class="bizGrid">
+        <div class="bizBox">
+          <div class="label" data-i18n="monthlyClientsLabel">每月預估接客數</div>
+          <input class="bizInput" id="monthlyClients" type="number" inputmode="decimal" min="0" step="1" value="20" />
+        </div>
+        <div class="bizBox">
+          <div class="label" data-i18n="monthlyRevenueLabel">月營收</div>
+          <div class="val" id="monthlyRevenue">-</div>
+        </div>
+        <div class="bizBox">
+          <div class="label" data-i18n="monthlyProfitLabel">月淨利</div>
+          <div class="val" id="monthlyProfit">-</div>
+        </div>
+        <div class="bizBox">
+          <div class="label" data-i18n="breakEvenLabel">損益兩平（客人/月）</div>
+          <div class="val warn" id="breakEven">-</div>
+        </div>
+      </div>
+
+      <hr class="bizDivider">
+
+      <!-- 折扣模擬 -->
+      <div class="bizGrid">
+        <div class="bizBox">
+          <div class="label" data-i18n="discountLabel">折扣模擬（%）</div>
+          <input class="bizInput" id="discountRate" type="number" inputmode="decimal" min="0" max="100" step="5" value="0" />
+        </div>
+        <div class="bizBox">
+          <div class="label" data-i18n="discountPriceLabel">折後售價</div>
+          <div class="val" id="discountPrice">-</div>
+        </div>
+        <div class="bizBox">
+          <div class="label" data-i18n="discountProfitLabel">折後利潤</div>
+          <div class="val" id="discountProfit">-</div>
+        </div>
+        <div class="bizBox">
+          <div class="label" data-i18n="discountMarginLabel">折後利潤率</div>
+          <div class="val" id="discountMargin">-</div>
+        </div>
+      </div>
+    </div>
+
     <div class="hint" id="note" style="margin-top:10px;" data-i18n="noteDefault">填入數值後按「計算」即可查看詳細結果。</div>
   </aside>
 </main>
+
+<!-- ===== 場景比較 ===== -->
+<div class="scenarioSection">
+  <div class="scenarioCard">
+    <div class="flexTitle">
+      <h2 data-i18n="scenarioTitle">場景比較</h2>
+      <button id="saveScenarioBtn" data-i18n="saveScenario">儲存當前場景</button>
+    </div>
+    <div class="scenarioList" id="scenarioList">
+      <div class="scenarioEmpty" data-i18n="scenarioEmpty">尚未儲存任何場景，計算後按「儲存當前場景」開始比較</div>
+    </div>
+  </div>
+</div>
 
 <footer>
   <span class="badge-dev">YEVOON</span>
   <div style="margin-top:8px;">© YEVOON 內部營運工具</div>
 </footer>
+
+<!-- 自動儲存提示浮標 -->
+<div class="saveIndicator" id="saveIndicator" data-i18n="autoSaved">已自動儲存</div>
 
 <script>
 // ========== [1] 語言包 LANG ==========
@@ -689,6 +1011,35 @@ const LANG = {
     copyMaterial: "材料費",
     copyConsumable: "耗材費",
     copyFixed: "固定分攤",
+    // 圓餅圖
+    pieTitle: "成本結構",
+    pieMaterial: "材料費",
+    pieConsumable: "耗材費",
+    pieOtherVar: "其他變動",
+    pieLabor: "人工成本",
+    pieFixed: "固定分攤",
+    pieFee: "手續費",
+    // 商業分析
+    bizTitle: "商業分析",
+    monthlyClientsLabel: "每月預估接客數",
+    monthlyRevenueLabel: "月營收",
+    monthlyProfitLabel: "月淨利",
+    breakEvenLabel: "損益兩平（客人/月）",
+    discountLabel: "折扣模擬（%）",
+    discountPriceLabel: "折後售價",
+    discountProfitLabel: "折後利潤",
+    discountMarginLabel: "折後利潤率",
+    // 場景比較
+    scenarioTitle: "場景比較",
+    saveScenario: "儲存當前場景",
+    scenarioEmpty: "尚未儲存任何場景，計算後按「儲存當前場景」開始比較",
+    scenarioLoad: "載入",
+    scenarioDel: "刪除",
+    scenarioFull: "最多儲存 4 組場景",
+    scenarioProfit: "利潤",
+    // 其他
+    confirmReset: "確定要重置所有資料嗎？",
+    autoSaved: "已自動儲存",
     // 預設選項名稱
     p_custom: "自訂輸入",
     p_emboss: "霧眉",
@@ -800,6 +1151,34 @@ const LANG = {
     copyMaterial: "재료비",
     copyConsumable: "소모품비",
     copyFixed: "고정비배분",
+    // 圓餅圖
+    pieTitle: "원가 구조",
+    pieMaterial: "재료비",
+    pieConsumable: "소모품비",
+    pieOtherVar: "기타 변동비",
+    pieLabor: "인건비",
+    pieFixed: "고정비",
+    pieFee: "수수료",
+    // 商業分析
+    bizTitle: "비즈니스 분석",
+    monthlyClientsLabel: "월 예상 고객 수",
+    monthlyRevenueLabel: "월 매출",
+    monthlyProfitLabel: "월 순이익",
+    breakEvenLabel: "손익분기점(고객/월)",
+    discountLabel: "할인 시뮬레이션(%)",
+    discountPriceLabel: "할인 후 가격",
+    discountProfitLabel: "할인 후 이익",
+    discountMarginLabel: "할인 후 이익률",
+    // 場景比較
+    scenarioTitle: "시나리오 비교",
+    saveScenario: "현재 시나리오 저장",
+    scenarioEmpty: "저장된 시나리오 없음. 계산 후 '현재 시나리오 저장' 버튼을 누르세요",
+    scenarioLoad: "불러오기",
+    scenarioDel: "삭제",
+    scenarioFull: "최대 4개 시나리오",
+    scenarioProfit: "이익",
+    confirmReset: "모든 데이터를 초기화하시겠습니까?",
+    autoSaved: "자동 저장됨",
     p_custom: "직접 입력",
     p_emboss: "엠보",
     p_combo: "페더포그",
@@ -841,10 +1220,10 @@ const PRESETS_DATA = {
   browTint:       { price: 500,  minutes: 30,  material: 100, consumable: 150, otherVar: 0 },
 };
 
-// 預設選項順序（對應 LANG 的 p_ 鍵）
+// 預設選項順序
 const PRESET_KEYS = ['custom','emboss','combo','hairstroke','machinefeather','ombreMachine','lip','hairline','beautyspot','keratin','silkworm','browTint'];
 
-// ========== [3] 工具函數（格式化、取值）==========
+// ========== [3] 工具函數 ==========
 const $ = (id) => document.getElementById(id);
 
 // 格式化金額
@@ -858,20 +1237,43 @@ const fmt = (n) => {
 // 格式化百分比
 const fmtPct = (x) => isFinite(x) ? (x * 100).toFixed(1) + "%" : "-";
 
-// 取數字值（空值或無效回傳 0）
+// 取數字值
 function num(id) {
   const v = parseFloat($(id).value);
   return isFinite(v) ? v : 0;
 }
 
-// 取當前語言文字
+// 取語言文字
 function t(key) {
   return LANG[curLang][key] || key;
 }
 
-// ========== [4] 細項面板邏輯 ==========
+// ========== [3.5] 數字跳動動畫 ==========
+let prevKPI = { totalCost: 0, profit: 0, margin: 0, profitPerHour: 0 };
+let animTimers = {};
 
-// 建立一列細項（材料/耗材/固定費共用模板）
+function animateValue(el, start, end, duration, formatter) {
+  // 快速輸入時取消前一次動畫
+  if (animTimers[el.id]) cancelAnimationFrame(animTimers[el.id]);
+  if (duration <= 0 || Math.abs(end - start) < 0.5) {
+    el.textContent = formatter(end);
+    return;
+  }
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // easeOutExpo
+    const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+    el.textContent = formatter(start + (end - start) * eased);
+    if (progress < 1) {
+      animTimers[el.id] = requestAnimationFrame(update);
+    }
+  }
+  animTimers[el.id] = requestAnimationFrame(update);
+}
+
+// ========== [4] 細項面板邏輯 ==========
 function rowTemplate(kind) {
   const row = document.createElement("div");
   row.className = "itemRow";
@@ -882,56 +1284,42 @@ function rowTemplate(kind) {
     <input data-k="${kind}" data-f="uses" type="number" inputmode="decimal" min="0" step="1" placeholder="${isFixed ? t('phFixUses') : t('phUses')}" />
     <button class="delBtn" type="button" title="${t('delTitle')}">×</button>
   `;
-  // 刪除按鈕事件
   row.querySelector(".delBtn").addEventListener("click", () => {
-    row.remove();
-    syncDetailsToMain();
-    calc();
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(20px)';
+    row.style.transition = 'opacity .2s, transform .2s';
+    setTimeout(() => { row.remove(); syncDetailsToMain(); calc(); }, 200);
   });
-  // 輸入即時同步
   row.querySelectorAll("input").forEach(inp => {
-    inp.addEventListener("input", () => {
-      syncDetailsToMain();
-      calc();
-    });
+    inp.addEventListener("input", () => { syncDetailsToMain(); calc(); });
   });
   return row;
 }
 
-// 計算「總額 ÷ 次數」的合計（材料/耗材用）
 function sumPerUse(containerId) {
-  const rows = [...$(containerId).querySelectorAll(".itemRow")];
   let sum = 0;
-  rows.forEach(r => {
+  [...$(containerId).querySelectorAll(".itemRow")].forEach(r => {
     const total = parseFloat(r.querySelector('[data-f="total"]').value);
     const uses  = parseFloat(r.querySelector('[data-f="uses"]').value);
-    if (isFinite(total) && isFinite(uses) && uses > 0) {
-      sum += (total / uses);
-    }
+    if (isFinite(total) && isFinite(uses) && uses > 0) sum += (total / uses);
   });
   return sum;
 }
 
-// 計算月固定費合計
 function sumMonthlyFixed() {
-  const rows = [...$("fixedRows").querySelectorAll(".itemRow")];
   let sum = 0;
-  rows.forEach(r => {
+  [...$("fixedRows").querySelectorAll(".itemRow")].forEach(r => {
     const total = parseFloat(r.querySelector('[data-f="total"]').value);
     if (isFinite(total)) sum += total;
   });
   return sum;
 }
 
-// 固定費分攤 = 月固定費 ÷ 月工作天數
 function fixedAllocFromDetails() {
   const workDays = num("workDays");
-  const monthlyFixed = sumMonthlyFixed();
-  if (workDays <= 0) return 0;
-  return monthlyFixed / workDays;
+  return workDays > 0 ? sumMonthlyFixed() / workDays : 0;
 }
 
-// 將細項計算結果同步回主欄位
 function syncDetailsToMain() {
   if ($("useMaterialDetail").checked) {
     const s = sumPerUse("materialRows");
@@ -940,7 +1328,6 @@ function syncDetailsToMain() {
   } else {
     $("materialSumText").textContent = "-";
   }
-
   if ($("useConsumableDetail").checked) {
     const s = sumPerUse("consumableRows");
     $("consumable").value = Math.round(s);
@@ -948,7 +1335,6 @@ function syncDetailsToMain() {
   } else {
     $("consumableSumText").textContent = "-";
   }
-
   if ($("useFixedDetail").checked) {
     const alloc = fixedAllocFromDetails();
     $("fixedAlloc").value = Math.round(alloc);
@@ -958,7 +1344,9 @@ function syncDetailsToMain() {
   }
 }
 
-// ========== [5] 核心計算 calculate() ==========
+// ========== [5] 核心計算 ==========
+let isFirstCalc = true;
+
 function calc() {
   syncDetailsToMain();
 
@@ -981,33 +1369,45 @@ function calc() {
   const includeTouchUp = $("includeTouchUp").checked;
   const touchUpFactor = includeTouchUp ? 2 : 1;
 
-  // 基礎成本（不含手續費）
   const baseCostNoFee = material + consumable + otherVar + labor + fixedAlloc;
-  // 乘以補色倍率
   const baseCostAdjusted = baseCostNoFee * touchUpFactor;
-  // 手續費（僅計算 1 次）
   const fee = price * feeRate + feeFixed;
 
-  // 總成本 = 調整後基礎成本 + 手續費
   const totalCost = baseCostAdjusted + fee;
   const profit = price - totalCost;
   const margin = (price > 0) ? (profit / price) : NaN;
   const profitPerHour = (hours > 0) ? (profit / hours) : NaN;
 
-  // 目標利潤率 → 建議售價
   const targetMargin = num("targetMargin") / 100;
   const denom = 1 - feeRate - targetMargin;
   const requiredPrice = denom > 0 ? (baseCostAdjusted + feeFixed) / denom : NaN;
 
-  // ========== [6] 渲染 render() ==========
-  $("totalCost").textContent = fmt(totalCost);
-  $("profit").textContent = fmt(profit);
-  $("margin").textContent = fmtPct(margin);
-  $("profitPerHour").textContent = fmt(profitPerHour);
+  // ===== KPI 數字跳動動畫 =====
+  const dur = isFirstCalc ? 0 : 450;
+  animateValue($("totalCost"), prevKPI.totalCost, totalCost, dur, fmt);
+  animateValue($("profit"), prevKPI.profit, profit, dur, fmt);
+  animateValue($("margin"), prevKPI.margin, isFinite(margin) ? margin : 0, dur, (v) => fmtPct(v));
+  animateValue($("profitPerHour"), prevKPI.profitPerHour, isFinite(profitPerHour) ? profitPerHour : 0, dur, fmt);
+  prevKPI = { totalCost, profit, margin: isFinite(margin) ? margin : 0, profitPerHour: isFinite(profitPerHour) ? profitPerHour : 0 };
+  isFirstCalc = false;
 
-  // 利潤數字顏色
+  // 利潤數字顏色 + 動畫
   $("profit").style.color = profit >= 0 ? "var(--good)" : "var(--bad)";
   $("margin").style.color = profit >= 0 ? "var(--good)" : "var(--bad)";
+
+  // 盈利時脈搏光暈，虧損時搖晃
+  if (price > 0 && isFinite(margin)) {
+    const profitBox = $("kpiProfitBox");
+    if (profit >= 0) {
+      profitBox.classList.remove('glow');
+      void profitBox.offsetWidth; // 強制重排以重新觸發動畫
+      profitBox.classList.add('glow');
+    } else {
+      $("profit").classList.remove('shake');
+      void $("profit").offsetWidth;
+      $("profit").classList.add('shake');
+    }
+  }
 
   // 明細表
   $("d_price").textContent = fmt(price);
@@ -1033,16 +1433,13 @@ function calc() {
     pill.className = "pill bad";
   }
 
-  // pill ON/OFF 切換
+  // pill ON/OFF
   $("touchUpPill").textContent = includeTouchUp ? t('touchUpOn') : t('touchUpOff');
   $("touchUpPill").className = includeTouchUp ? "pill good" : "pill";
-
   $("matPill").textContent = $("useMaterialDetail").checked ? "ON" : "OFF";
   $("matPill").className = $("useMaterialDetail").checked ? "pill good" : "pill";
-
   $("conPill").textContent = $("useConsumableDetail").checked ? "ON" : "OFF";
   $("conPill").className = $("useConsumableDetail").checked ? "pill good" : "pill";
-
   $("fixPill").textContent = $("useFixedDetail").checked ? "ON" : "OFF";
   $("fixPill").className = $("useFixedDetail").checked ? "pill good" : "pill";
 
@@ -1053,35 +1450,102 @@ function calc() {
   } else {
     note.textContent = `${t('kpiCostTitle')} ${fmt(totalCost)} / ${t('kpiProfitTitle')} ${fmt(profit)} / ${t('kpiMarginTitle')} ${fmtPct(margin)}`;
   }
+
+  // ===== [C] 圓餅圖 =====
+  renderPieChart(material * touchUpFactor, consumable * touchUpFactor, otherVar * touchUpFactor, labor * touchUpFactor, fixedAlloc * touchUpFactor, fee);
+
+  // ===== [E] 商業分析 =====
+  const clients = num("monthlyClients");
+  const mRevenue = price * clients;
+  const mProfit = profit * clients;
+  $("monthlyRevenue").textContent = fmt(mRevenue);
+  $("monthlyRevenue").className = "val" + (mProfit >= 0 ? " good" : " bad");
+  $("monthlyProfit").textContent = fmt(mProfit);
+  $("monthlyProfit").className = "val" + (mProfit >= 0 ? " good" : " bad");
+
+  // 損益兩平：月固定費 / (售價 - 變動成本 - 手續費) 的單次利潤（不含固定分攤）
+  const profitNoFixed = price - (material + consumable + otherVar + labor) * touchUpFactor - fee;
+  if (profitNoFixed > 0 && fixedAlloc > 0) {
+    const monthlyFixed = $("useFixedDetail").checked ? sumMonthlyFixed() : fixedAlloc * (num("workDays") || 20);
+    const be = Math.ceil(monthlyFixed / profitNoFixed);
+    $("breakEven").textContent = be + " " + (curLang === 'zh' ? '位' : '명');
+  } else {
+    $("breakEven").textContent = "-";
+  }
+
+  // 折扣模擬
+  const discountPct = num("discountRate") / 100;
+  const discountedPrice = price * (1 - discountPct);
+  const discountedProfit = discountedPrice - totalCost + (price * feeRate * discountPct); // 手續費也會降
+  const discountedMargin = discountedPrice > 0 ? discountedProfit / discountedPrice : NaN;
+  $("discountPrice").textContent = fmt(discountedPrice);
+  $("discountProfit").textContent = fmt(discountedProfit);
+  $("discountProfit").className = "val" + (discountedProfit >= 0 ? " good" : " bad");
+  $("discountMargin").textContent = fmtPct(discountedMargin);
+  $("discountMargin").className = "val" + (discountedProfit >= 0 ? " good" : " bad");
+
+  // 自動儲存
+  saveState();
 }
 
-// ========== [7] 語言切換 setLang() ==========
+// ========== [5.5] 圓餅圖渲染 ==========
+function renderPieChart(mat, con, otherV, labor, fixed, fee) {
+  const parts = [
+    { key: 'pieMaterial',   val: mat,    color: 'var(--pie-material)' },
+    { key: 'pieConsumable', val: con,    color: 'var(--pie-consumable)' },
+    { key: 'pieOtherVar',   val: otherV, color: 'var(--pie-otherVar)' },
+    { key: 'pieLabor',      val: labor,  color: 'var(--pie-labor)' },
+    { key: 'pieFixed',      val: fixed,  color: 'var(--pie-fixed)' },
+    { key: 'pieFee',        val: fee,    color: 'var(--pie-fee)' },
+  ];
+  const total = parts.reduce((s, p) => s + Math.max(0, p.val), 0);
+
+  // 建立 conic-gradient
+  if (total <= 0) {
+    $("pieChart").style.background = 'var(--line)';
+    $("pieLegend").innerHTML = '';
+    return;
+  }
+
+  let gradParts = [];
+  let cumDeg = 0;
+  parts.forEach(p => {
+    const deg = (Math.max(0, p.val) / total) * 360;
+    if (deg > 0) {
+      gradParts.push(`${p.color} ${cumDeg}deg ${cumDeg + deg}deg`);
+    }
+    cumDeg += deg;
+  });
+  $("pieChart").style.background = `conic-gradient(${gradParts.join(', ')})`;
+
+  // 圖例
+  let legendHTML = '';
+  parts.forEach(p => {
+    const pct = total > 0 ? ((Math.max(0, p.val) / total) * 100).toFixed(1) : '0.0';
+    if (p.val > 0) {
+      legendHTML += `<div class="item"><span class="dot" style="background:${p.color}"></span>${t(p.key)} ${fmt(p.val)}<span class="pct">${pct}%</span></div>`;
+    }
+  });
+  $("pieLegend").innerHTML = legendHTML;
+}
+
+// ========== [6] 語言切換 ==========
 function setLang(lang) {
   curLang = lang;
-  // 切換按鈕 active 狀態
   $("langZh").classList.toggle("active", lang === 'zh');
   $("langKo").classList.toggle("active", lang === 'ko');
-  // 更新 html lang 屬性
   document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'ko';
 
-  // 更新所有帶 data-i18n 的元素
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.getAttribute("data-i18n");
     const val = LANG[curLang][key];
     if (val !== undefined) {
-      // 含 HTML 標籤的用 innerHTML，否則用 textContent
-      if (val.includes("<")) {
-        el.innerHTML = val;
-      } else {
-        el.textContent = val;
-      }
+      if (val.includes("<")) { el.innerHTML = val; } else { el.textContent = val; }
     }
   });
 
-  // 重建預設下拉選單
   buildPresetOptions();
 
-  // 更新已存在的細項列佔位文字
   document.querySelectorAll("#materialRows .itemRow, #consumableRows .itemRow").forEach(row => {
     row.querySelector('[data-f="name"]').placeholder = t('phName');
     row.querySelector('[data-f="total"]').placeholder = t('phTotal');
@@ -1095,11 +1559,11 @@ function setLang(lang) {
     row.querySelector('.delBtn').title = t('delTitle');
   });
 
-  // 重新計算以更新結果區文字
+  renderScenarios();
   calc();
 }
 
-// 建立預設下拉選項
+// ========== [7] 預設選項 ==========
 function buildPresetOptions() {
   const sel = $("preset");
   const curVal = sel.value;
@@ -1110,11 +1574,9 @@ function buildPresetOptions() {
     opt.textContent = t('p_' + key);
     sel.appendChild(opt);
   });
-  // 保持當前選中值
   if (PRESET_KEYS.includes(curVal)) sel.value = curVal;
 }
 
-// ========== [8] 預設套用 applyPreset() ==========
 function applyPreset(p) {
   if (!PRESETS_DATA[p] || p === 'custom') return;
   $("price").value = PRESETS_DATA[p].price;
@@ -1124,14 +1586,16 @@ function applyPreset(p) {
   $("otherVar").value = PRESETS_DATA[p].otherVar;
 }
 
-// ========== [9] 重置 resetAll() ==========
-function resetAll() {
+// ========== [8] 重置（含確認） ==========
+function resetAll(skipConfirm) {
+  if (!skipConfirm && !confirm(t('confirmReset'))) return;
+
   $("preset").value = "custom";
-  ["price","minutes","material","consumable","otherVar","hourlyWage","fixedAlloc","feeRate","feeFixed"].forEach(id => {
-    $(id).value = "";
-  });
+  ["price","minutes","material","consumable","otherVar","hourlyWage","fixedAlloc","feeRate","feeFixed"].forEach(id => $(id).value = "");
   $("targetMargin").value = 55;
   $("workDays").value = 20;
+  $("monthlyClients").value = 20;
+  $("discountRate").value = 0;
 
   $("includeTouchUp").checked = false;
   $("useMaterialDetail").checked = false;
@@ -1169,9 +1633,23 @@ function resetAll() {
   $("fixPill").textContent = "OFF"; $("fixPill").className = "pill";
 
   $("requiredPrice").value = "";
+
+  $("pieChart").style.background = 'var(--line)';
+  $("pieLegend").innerHTML = '';
+  $("monthlyRevenue").textContent = "-";
+  $("monthlyProfit").textContent = "-";
+  $("breakEven").textContent = "-";
+  $("discountPrice").textContent = "-";
+  $("discountProfit").textContent = "-";
+  $("discountMargin").textContent = "-";
+
+  prevKPI = { totalCost: 0, profit: 0, margin: 0, profitPerHour: 0 };
+  isFirstCalc = true;
+
+  localStorage.removeItem('yevoon-calc-state');
 }
 
-// ========== [10] 複製結果 copyResult() ==========
+// ========== [9] 複製結果 ==========
 async function copyResult() {
   calc();
   const text = [
@@ -1194,66 +1672,241 @@ async function copyResult() {
   }
 }
 
-// ========== [11] 事件綁定（只綁一次）==========
+// ========== [10] LocalStorage 持久化 ==========
+let saveTimeout = null;
+function saveState() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    try {
+      const state = {
+        version: 2,
+        lang: curLang,
+        preset: $("preset").value,
+        fields: {},
+        checkboxes: {},
+        materialItems: [],
+        consumableItems: [],
+        fixedItems: [],
+        scenarios: scenarios,
+      };
 
-// 預設下拉變更
+      ["price","minutes","material","consumable","otherVar","hourlyWage","fixedAlloc","feeRate","feeFixed","targetMargin","workDays","monthlyClients","discountRate"].forEach(id => {
+        state.fields[id] = $(id).value;
+      });
+
+      ["includeTouchUp","useMaterialDetail","useConsumableDetail","useFixedDetail"].forEach(id => {
+        state.checkboxes[id] = $(id).checked;
+      });
+
+      // 序列化細項列
+      const serializeRows = (containerId) => {
+        return [...$(containerId).querySelectorAll(".itemRow")].map(r => ({
+          name: r.querySelector('[data-f="name"]').value,
+          total: r.querySelector('[data-f="total"]').value,
+          uses: r.querySelector('[data-f="uses"]').value,
+        }));
+      };
+      state.materialItems = serializeRows("materialRows");
+      state.consumableItems = serializeRows("consumableRows");
+      state.fixedItems = serializeRows("fixedRows");
+
+      localStorage.setItem('yevoon-calc-state', JSON.stringify(state));
+
+      // 顯示儲存提示
+      const indicator = $("saveIndicator");
+      indicator.textContent = t('autoSaved');
+      indicator.classList.add('show');
+      setTimeout(() => indicator.classList.remove('show'), 1500);
+    } catch(e) { /* 靜默失敗 */ }
+  }, 800); // 防抖 800ms
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('yevoon-calc-state');
+    if (!raw) return false;
+    const state = JSON.parse(raw);
+    if (!state || !state.version) return false;
+
+    // 語言
+    if (state.lang) {
+      curLang = state.lang;
+      $("langZh").classList.toggle("active", curLang === 'zh');
+      $("langKo").classList.toggle("active", curLang === 'ko');
+      document.documentElement.lang = curLang === 'zh' ? 'zh-Hant' : 'ko';
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        const val = LANG[curLang][key];
+        if (val !== undefined) {
+          if (val.includes("<")) { el.innerHTML = val; } else { el.textContent = val; }
+        }
+      });
+    }
+
+    // 欄位
+    if (state.fields) {
+      Object.keys(state.fields).forEach(id => {
+        if ($(id)) $(id).value = state.fields[id];
+      });
+    }
+
+    // 預設
+    if (state.preset) $("preset").value = state.preset;
+
+    // 勾選框
+    if (state.checkboxes) {
+      Object.keys(state.checkboxes).forEach(id => {
+        if ($(id)) $(id).checked = state.checkboxes[id];
+      });
+    }
+
+    // 面板顯示
+    if ($("useMaterialDetail").checked) $("materialPanel").classList.add("show");
+    if ($("useConsumableDetail").checked) $("consumablePanel").classList.add("show");
+    if ($("useFixedDetail").checked) $("fixedPanel").classList.add("show");
+
+    // 恢復細項列
+    const restoreRows = (items, containerId, kind) => {
+      if (!items || !items.length) return;
+      items.forEach(item => {
+        const row = rowTemplate(kind);
+        row.querySelector('[data-f="name"]').value = item.name || '';
+        row.querySelector('[data-f="total"]').value = item.total || '';
+        row.querySelector('[data-f="uses"]').value = item.uses || '';
+        $(containerId).appendChild(row);
+      });
+    };
+    restoreRows(state.materialItems, "materialRows", "mat");
+    restoreRows(state.consumableItems, "consumableRows", "con");
+    restoreRows(state.fixedItems, "fixedRows", "fix");
+
+    // 場景
+    if (state.scenarios) scenarios = state.scenarios;
+
+    return true;
+  } catch(e) { return false; }
+}
+
+// ========== [11] 場景比較 ==========
+let scenarios = [];
+
+function saveScenario() {
+  if (scenarios.length >= 4) {
+    alert(t('scenarioFull'));
+    return;
+  }
+  const presetText = $("preset").options[$("preset").selectedIndex].text;
+  const price = num("price");
+  const totalCostVal = prevKPI.totalCost;
+  const profitVal = prevKPI.profit;
+  const marginVal = prevKPI.margin;
+
+  if (price <= 0) return;
+
+  scenarios.push({
+    name: presetText + ' ' + fmt(price),
+    price,
+    cost: totalCostVal,
+    profit: profitVal,
+    margin: marginVal,
+    preset: $("preset").value,
+    fields: {},
+  });
+
+  // 儲存表單快照以便載入
+  const last = scenarios[scenarios.length - 1];
+  ["price","minutes","material","consumable","otherVar","hourlyWage","fixedAlloc","feeRate","feeFixed"].forEach(id => {
+    last.fields[id] = $(id).value;
+  });
+  last.touchUp = $("includeTouchUp").checked;
+
+  renderScenarios();
+  saveState();
+}
+
+function loadScenario(idx) {
+  const s = scenarios[idx];
+  if (!s) return;
+  $("preset").value = s.preset || 'custom';
+  Object.keys(s.fields).forEach(id => {
+    if ($(id)) $(id).value = s.fields[id];
+  });
+  if (s.touchUp !== undefined) $("includeTouchUp").checked = s.touchUp;
+  calc();
+}
+
+function deleteScenario(idx) {
+  scenarios.splice(idx, 1);
+  renderScenarios();
+  saveState();
+}
+
+function renderScenarios() {
+  const list = $("scenarioList");
+  if (scenarios.length === 0) {
+    list.innerHTML = `<div class="scenarioEmpty" data-i18n="scenarioEmpty">${t('scenarioEmpty')}</div>`;
+    return;
+  }
+
+  const maxProfit = Math.max(...scenarios.map(s => Math.abs(s.profit)), 1);
+
+  list.innerHTML = scenarios.map((s, i) => {
+    const barW = Math.min(Math.abs(s.profit) / maxProfit * 100, 100);
+    const isPos = s.profit >= 0;
+    return `
+      <div class="scenarioItem" style="animation-delay:${i * 0.06}s">
+        <div class="scenarioInfo">
+          <div class="name">${s.name}</div>
+          <div class="meta">${t('scenarioProfit')}: ${fmt(s.profit)} (${fmtPct(s.margin)})</div>
+        </div>
+        <div class="scenarioBar">
+          <div class="fill ${isPos ? 'pos' : 'neg'}" style="width:${barW}%">${fmtPct(s.margin)}</div>
+        </div>
+        <div class="scenarioBtns">
+          <button class="secondary" onclick="loadScenario(${i})">${t('scenarioLoad')}</button>
+          <button class="secondary" style="color:var(--bad)" onclick="deleteScenario(${i})">${t('scenarioDel')}</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ========== [12] 事件綁定 ==========
 $("preset").addEventListener("change", (e) => { applyPreset(e.target.value); calc(); });
-
-// 補色勾選
 $("includeTouchUp").addEventListener("change", () => calc());
 
-// 材料費細項勾選
 $("useMaterialDetail").addEventListener("change", () => {
   $("materialPanel").classList.toggle("show", $("useMaterialDetail").checked);
   calc();
 });
-// 耗材費細項勾選
 $("useConsumableDetail").addEventListener("change", () => {
   $("consumablePanel").classList.toggle("show", $("useConsumableDetail").checked);
   calc();
 });
-// 固定成本細項勾選
 $("useFixedDetail").addEventListener("change", () => {
   $("fixedPanel").classList.toggle("show", $("useFixedDetail").checked);
   calc();
 });
 
-// 新增材料
-$("addMaterialBtn").addEventListener("click", () => {
-  $("materialRows").appendChild(rowTemplate("mat"));
-  calc();
-});
-// 新增耗材
-$("addConsumableBtn").addEventListener("click", () => {
-  $("consumableRows").appendChild(rowTemplate("con"));
-  calc();
-});
-// 新增固定費
-$("addFixedBtn").addEventListener("click", () => {
-  const row = rowTemplate("fix");
-  $("fixedRows").appendChild(row);
-  calc();
-});
+$("addMaterialBtn").addEventListener("click", () => { $("materialRows").appendChild(rowTemplate("mat")); calc(); });
+$("addConsumableBtn").addEventListener("click", () => { $("consumableRows").appendChild(rowTemplate("con")); calc(); });
+$("addFixedBtn").addEventListener("click", () => { $("fixedRows").appendChild(rowTemplate("fix")); calc(); });
 
-// 表單 submit（手機鍵盤「完成鍵」也能觸發計算）
-$("calcForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  calc();
-});
+$("calcForm").addEventListener("submit", (e) => { e.preventDefault(); calc(); });
 
-// 所有輸入欄位即時自動計算
 ["price","minutes","material","consumable","otherVar","hourlyWage","fixedAlloc","feeRate","feeFixed","targetMargin","workDays"]
   .forEach(id => $(id).addEventListener("input", () => calc()));
 
-// 重置按鈕
-$("resetBtn").addEventListener("click", () => resetAll());
+// 商業分析欄位
+$("monthlyClients").addEventListener("input", () => calc());
+$("discountRate").addEventListener("input", () => calc());
 
-// 複製結果按鈕
+$("resetBtn").addEventListener("click", () => resetAll(false));
 $("copyBtn").addEventListener("click", () => copyResult());
+$("saveScenarioBtn").addEventListener("click", () => saveScenario());
 
-// ========== [12] PWA Service Worker ==========
+// ========== [13] PWA Service Worker ==========
 (function registerPWA() {
-  // 動態建立 manifest
   const manifest = {
     name: "YEVOON 紋繡成本計算器",
     short_name: "YEVOON計算器",
@@ -1274,10 +1927,9 @@ $("copyBtn").addEventListener("click", () => copyResult());
   link.href = manifestURL;
   document.head.appendChild(link);
 
-  // 動態註冊 Service Worker（離線快取）
   if ('serviceWorker' in navigator) {
     const swCode = `
-      const CACHE = 'yevoon-calc-v1';
+      const CACHE = 'yevoon-calc-v2';
       self.addEventListener('install', e => {
         e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html'])));
         self.skipWaiting();
@@ -1292,9 +1944,20 @@ $("copyBtn").addEventListener("click", () => copyResult());
   }
 })();
 
-// ========== [13] 初始化 ==========
+// ========== [14] 初始化 ==========
 buildPresetOptions();
-resetAll();
+
+// 嘗試從 localStorage 恢復狀態
+const hasState = loadState();
+if (hasState) {
+  buildPresetOptions();
+  isFirstCalc = true;
+  calc();
+} else {
+  resetAll(true); // 跳過確認的初始重置
+}
+
+renderScenarios();
 </script>
 </body>
 </html>
