@@ -365,21 +365,21 @@
   <section class="card">
     <div class="flexTitle">
       <h2 data-i18n="inputTitle">1) 施術/成本輸入</h2>
-      <span class="pill" data-i18n="unitPill">單位：元(₩)・時間：分鐘</span>
+      <span class="pill" data-i18n="unitPill">單位：台幣($)・時間：分鐘</span>
     </div>
 
     <form id="calcForm" autocomplete="off">
       <div class="grid">
         <!-- 施術種類 -->
         <div class="field">
-          <label><span data-i18n="presetLabel">施術種類</span> <span class="mini" data-i18n="presetMini">預設值</span></label>
+          <label><span data-i18n="presetLabel">施作類型</span> <span class="mini" data-i18n="presetMini">預設值</span></label>
           <select id="preset"></select>
           <div class="hint" data-i18n="presetHint">預設值為參考範例，可依自身店鋪調整。</div>
         </div>
         <!-- 售價 -->
         <div class="field">
           <label data-i18n="priceLabel">售價（客戶付款金額）</label>
-          <input id="price" type="number" inputmode="decimal" min="0" step="1000" />
+          <input id="price" type="number" inputmode="decimal" min="0" step="100" />
         </div>
         <!-- 時間 -->
         <div class="field">
@@ -406,12 +406,12 @@
         <!-- 時薪 -->
         <div class="field">
           <label data-i18n="hourlyWageLabel">施術者時薪（元/小時）</label>
-          <input id="hourlyWage" type="number" inputmode="decimal" min="0" step="1000" />
+          <input id="hourlyWage" type="number" inputmode="decimal" min="0" step="50" />
         </div>
         <!-- 固定成本分攤 -->
         <div class="field">
           <label><span data-i18n="fixedAllocLabel">固定成本分攤（元/次）</span> <span class="mini" data-i18n="autoMini">可自動</span></label>
-          <input id="fixedAlloc" type="number" inputmode="decimal" min="0" step="1000" />
+          <input id="fixedAlloc" type="number" inputmode="decimal" min="0" step="100" />
           <div class="hint" data-i18n="fixedAllocHint">使用下方「固定成本細項」可自動計算分攤金額。</div>
         </div>
         <!-- 手續費% -->
@@ -447,7 +447,7 @@
           <span data-i18n="matSumLabel">材料費（單次）合計</span>
           <b id="materialSumText">-</b>
         </div>
-        <div class="hint" data-i18n="matSumHint">例）色料 40,000元 / 4次使用 → 10,000元/次</div>
+        <div class="hint" data-i18n="matSumHint">例）色料 1,200元 / 4次使用 → 300元/次</div>
       </div>
 
       <!-- ☐ 耗材費細項 -->
@@ -471,7 +471,7 @@
           <span data-i18n="conSumLabel">耗材費（單次）合計</span>
           <b id="consumableSumText">-</b>
         </div>
-        <div class="hint" data-i18n="conSumHint">例）修護膏 20,000元 / 50個 → 400元/次</div>
+        <div class="hint" data-i18n="conSumHint">例）修護膏 600元 / 50個 → 12元/次</div>
       </div>
 
       <!-- ☐ 固定成本細項 -->
@@ -501,7 +501,7 @@
           <span data-i18n="fixSumLabel">固定成本分攤（單次）＝（月固定費合計 ÷ 月工作天數）</span>
           <b id="fixedSumText">-</b>
         </div>
-        <div class="hint" data-i18n="fixSumHint">例）月固定費 1,000,000元 / 月工作日 20天 = 50,000元（單次固定成本）</div>
+        <div class="hint" data-i18n="fixSumHint">例）月固定費 30,000元 / 月工作日 20天 = 1,500元（單次固定成本）</div>
       </div>
 
       <!-- ☐ 含補色1次 -->
@@ -604,8 +604,8 @@ const LANG = {
     title: "紋繡成本計算器",
     subtitle: "材料/耗材以「總購買價 ÷ 可用次數」自動計算單次成本。<br/>固定成本以「月固定費 ÷ 月工作天數」分攤至每次施術。",
     inputTitle: "1) 施術/成本輸入",
-    unitPill: "單位：元(₩)・時間：分鐘",
-    presetLabel: "施術種類",
+    unitPill: "單位：台幣($)・時間：分鐘",
+    presetLabel: "施作類型",
     presetMini: "預設值",
     presetHint: "預設值為參考範例，可依自身店鋪調整。",
     priceLabel: "售價（客戶付款金額）",
@@ -627,19 +627,19 @@ const LANG = {
     matItemsPill: "材料項目",
     addMaterial: "+ 新增材料",
     matSumLabel: "材料費（單次）合計",
-    matSumHint: "例）色料 40,000元 / 4次使用 → 10,000元/次",
+    matSumHint: "例）色料 1,200元 / 4次使用 → 300元/次",
     conDetailTitle: "耗材費細項展開（修護膏、紙杯、停車費等）",
     conDetailDesc: "「總購買價 ÷ 可用次數」自動計算單次成本後回填合計",
     conItemsPill: "耗材項目",
     addConsumable: "+ 新增耗材",
     conSumLabel: "耗材費（單次）合計",
-    conSumHint: "例）修護膏 20,000元 / 50個 → 400元/次",
+    conSumHint: "例）修護膏 600元 / 50個 → 12元/次",
     fixDetailTitle: "固定成本細項展開",
     fixDetailDesc: "月固定費（房租/電費/管理費/行銷等）÷ 月工作天數 → 單次分攤",
     fixItemsPill: "月固定費項目",
     addFixed: "+ 新增固定費",
     fixSumLabel: "固定成本分攤（單次）＝（月固定費合計 ÷ 月工作天數）",
-    fixSumHint: "例）月固定費 1,000,000元 / 月工作日 20天 = 50,000元（單次固定成本）",
+    fixSumHint: "例）月固定費 30,000元 / 月工作日 20天 = 1,500元（單次固定成本）",
     workDaysLabel: "月工作天數（天）",
     touchUpTitle: "含補色 1 次",
     touchUpDesc: '勾選後成本（材料+耗材+其他+人工+固定）×<b>2</b>，手續費維持 1 次',
@@ -692,15 +692,16 @@ const LANG = {
     // 預設選項名稱
     p_custom: "自訂輸入",
     p_emboss: "霧眉",
-    p_combo: "絲霧眉",
-    p_hairstroke: "線條眉",
-    p_machinefeather: "機器羽毛",
-    p_ombreMachine: "漸層機器",
-    p_lip: "嘟嘟唇",
-    p_overlip: "滿版唇",
+    p_combo: "飄霧眉",
+    p_hairstroke: "飄眉",
+    p_machinefeather: "機器野生眉",
+    p_ombreMachine: "機器霧眉",
+    p_lip: "霧唇",
     p_hairline: "髮際線",
-    p_eyeliner: "美瞳線",
     p_beautyspot: "美人痣",
+    p_keratin: "角蛋白",
+    p_silkworm: "臥蠶",
+    p_browTint: "染眉",
     // 細項佔位文字
     phName: "品名（例：色料）",
     phTotal: "總購買價",
@@ -714,7 +715,7 @@ const LANG = {
     title: "반영구 원가 계산기",
     subtitle: "재료/소모품은 '총 구매가 ÷ 사용가능 횟수'로 1회당 원가 자동 계산.<br/>고정비는 '월 고정비 ÷ 월 근무 일수'로 1회당 배분.",
     inputTitle: "1) 시술/원가 입력",
-    unitPill: "단위: 원(₩) · 시간: 분",
+    unitPill: "단위: NT$ · 시간: 분",
     presetLabel: "시술 종류",
     presetMini: "프리셋",
     presetHint: "프리셋은 초기값 예시. 샵 기준으로 수정 가능.",
@@ -737,19 +738,19 @@ const LANG = {
     matItemsPill: "재료 항목",
     addMaterial: "+ 재료 추가",
     matSumLabel: "재료비(1회) 합계",
-    matSumHint: "예) 색소 40,000원 / 4회 사용 → 10,000원/회",
+    matSumHint: "예) 색소 1,200원 / 4회 사용 → 300원/회",
     conDetailTitle: "소모품 세부 입력 사용(재생크림, 간식, 종이컵, 주차요금 등)",
     conDetailDesc: '"총 구매가 ÷ 사용가능 횟수"로 1회당 원가 자동 계산 후 합계 반영',
     conItemsPill: "소모품 항목",
     addConsumable: "+ 소모품 추가",
     conSumLabel: "소모품비(1회) 합계",
-    conSumHint: "예) 재생크림 20,000원 / 50개 → 400원/회",
+    conSumHint: "예) 재생크림 600원 / 50개 → 12원/회",
     fixDetailTitle: "고정비 세부 입력 사용",
     fixDetailDesc: "월 고정비(월세/전기/관리비/마케팅 등) → 월 근무일로 1회당 배분",
     fixItemsPill: "월 고정비 항목",
     addFixed: "+ 고정비 추가",
     fixSumLabel: "고정비 배분(1회) = (월고정비 합계 ÷ 월 근무일)",
-    fixSumHint: "예) 월 고정비 1,000,000원 / 월 근무일 20일 = 50,000원 (1회 기준 고정비)",
+    fixSumHint: "예) 월 고정비 30,000원 / 월 근무일 20일 = 1,500원 (1회 기준 고정비)",
     workDaysLabel: "월 근무일(일)",
     touchUpTitle: "리터치 1회 포함",
     touchUpDesc: '체크 시 원가(재료+소모품+기타+인건비+고정비)가 <b>2배</b>로 계산 (수수료는 결제 1회 기준)',
@@ -801,15 +802,16 @@ const LANG = {
     copyFixed: "고정비배분",
     p_custom: "직접 입력",
     p_emboss: "엠보",
-    p_combo: "콤보",
-    p_hairstroke: "헤어스트록",
-    p_machinefeather: "머신페더링",
-    p_ombreMachine: "옴브레머신",
-    p_lip: "입술",
-    p_overlip: "오버립",
+    p_combo: "페더포그",
+    p_hairstroke: "페더링",
+    p_machinefeather: "머신와일드브로우",
+    p_ombreMachine: "머신포그브로우",
+    p_lip: "포그립",
     p_hairline: "헤어라인",
-    p_eyeliner: "아이라인",
     p_beautyspot: "미인점",
+    p_keratin: "케라틴",
+    p_silkworm: "와잠",
+    p_browTint: "눈썹염색",
     phName: "항목명 (예: 색소)",
     phTotal: "총 구매가",
     phUses: "사용횟수(명/회)",
@@ -825,21 +827,22 @@ let curLang = 'zh';
 
 // ========== [2] 預設值 PRESETS ==========
 const PRESETS_DATA = {
-  custom:         { price: 0,      minutes: 0,   material: 0,     consumable: 0,     otherVar: 0 },
-  emboss:         { price: 250000, minutes: 120, material: 9000,  consumable: 12000, otherVar: 0 },
-  combo:          { price: 270000, minutes: 130, material: 10000, consumable: 13000, otherVar: 0 },
-  hairstroke:     { price: 300000, minutes: 150, material: 12000, consumable: 14000, otherVar: 0 },
-  machinefeather: { price: 280000, minutes: 140, material: 11000, consumable: 14000, otherVar: 0 },
-  ombreMachine:   { price: 260000, minutes: 130, material: 10000, consumable: 13000, otherVar: 0 },
-  lip:            { price: 300000, minutes: 150, material: 12000, consumable: 13000, otherVar: 0 },
-  overlip:        { price: 320000, minutes: 160, material: 13000, consumable: 13500, otherVar: 0 },
-  hairline:       { price: 350000, minutes: 180, material: 15000, consumable: 16000, otherVar: 0 },
-  eyeliner:       { price: 220000, minutes: 110, material: 8000,  consumable: 11000, otherVar: 0 },
-  beautyspot:     { price: 80000,  minutes: 40,  material: 3000,  consumable: 5000,  otherVar: 0 },
+  custom:         { price: 0,    minutes: 0,   material: 0,   consumable: 0,   otherVar: 0 },
+  emboss:         { price: 6000, minutes: 120, material: 300, consumable: 400, otherVar: 0 },
+  combo:          { price: 7000, minutes: 130, material: 350, consumable: 450, otherVar: 0 },
+  hairstroke:     { price: 8000, minutes: 150, material: 400, consumable: 500, otherVar: 0 },
+  machinefeather: { price: 7000, minutes: 140, material: 350, consumable: 450, otherVar: 0 },
+  ombreMachine:   { price: 6500, minutes: 130, material: 350, consumable: 450, otherVar: 0 },
+  lip:            { price: 8000, minutes: 150, material: 400, consumable: 450, otherVar: 0 },
+  hairline:       { price: 10000,minutes: 180, material: 500, consumable: 550, otherVar: 0 },
+  beautyspot:     { price: 2000, minutes: 40,  material: 100, consumable: 150, otherVar: 0 },
+  keratin:        { price: 1400, minutes: 60,  material: 200, consumable: 300, otherVar: 0 },
+  silkworm:       { price: 5000, minutes: 90,  material: 300, consumable: 400, otherVar: 0 },
+  browTint:       { price: 500,  minutes: 30,  material: 100, consumable: 150, otherVar: 0 },
 };
 
 // 預設選項順序（對應 LANG 的 p_ 鍵）
-const PRESET_KEYS = ['custom','emboss','combo','hairstroke','machinefeather','ombreMachine','lip','overlip','hairline','eyeliner','beautyspot'];
+const PRESET_KEYS = ['custom','emboss','combo','hairstroke','machinefeather','ombreMachine','lip','hairline','beautyspot','keratin','silkworm','browTint'];
 
 // ========== [3] 工具函數（格式化、取值）==========
 const $ = (id) => document.getElementById(id);
@@ -849,7 +852,7 @@ const fmt = (n) => {
   if (!isFinite(n)) return "-";
   const sign = n < 0 ? "-" : "";
   n = Math.abs(n);
-  return sign + "₩" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return sign + "$" + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 // 格式化百分比
